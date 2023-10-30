@@ -2,8 +2,6 @@ package br.com.devence.belizario
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
@@ -37,6 +35,8 @@ class MainActivity : AppCompatActivity() {
 
         val inputBusca = findViewById<EditText>(R.id.inputBusca)
         val confirmBusca = findViewById<Button>(R.id.confirmBusca)
+        val locInicial = LatLng(-21.19596944477334, -43.792077649345096)
+        val zoomLevel = 12f
 
         confirmBusca.setOnClickListener {
             val textoBusca = inputBusca.text.toString()
@@ -49,8 +49,8 @@ class MainActivity : AppCompatActivity() {
         mapFragment.getMapAsync(OnMapReadyCallback {
             googleMap = it
 
-            val locInicial = LatLng(-21.19596944477334, -43.792077649345096)
-            val zoomLevel = 12f
+            locInicial
+            zoomLevel
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locInicial, zoomLevel))
         })
 
@@ -108,6 +108,13 @@ class MainActivity : AppCompatActivity() {
                                     val latitude = latLngArray[0].toDouble()
                                     val longitude = latLngArray[1].toDouble()
                                     val locInicial = LatLng(latitude, longitude)
+                                    val zoomLevel = 12f
+                                    googleMap.animateCamera(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            locInicial, zoomLevel
+                                        )
+                                    )
+
                                     val marker = googleMap.addMarker(
                                         MarkerOptions().position(locInicial).title(localizacao.nome)
                                     )
@@ -130,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             val builder = AlertDialog.Builder(context)
             builder.setTitle("Erro")
-            builder.setMessage("Ocorreu um erro, entre em contato com o proprietário do aplicativo.")
+            builder.setMessage("Ocorreu um erro na busca. Se o problema persistir, verifique sua conexão com a internet ou entre em contato com o proprietário do aplicativo.")
             builder.setPositiveButton("OK", null)
             val dialog: AlertDialog = builder.create()
             dialog.show()
