@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
     private fun runOnUiThread(context: Context, textoBusca: String) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://thaianramalho.com/api_belizario/locaisAtendimento.php?senha=dxic5CyB&busca=$textoBusca")
+            .url("https://thaianramalho.com/api_belizario/atendimento.php?senha=dxic5CyB&busca=$textoBusca")
             .build()
 
         client.newCall(request).enqueue(object : Callback {
