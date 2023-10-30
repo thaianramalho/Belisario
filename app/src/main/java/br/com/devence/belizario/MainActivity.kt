@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -31,13 +31,19 @@ class MainActivity : AppCompatActivity() {
     lateinit var mapFragment: SupportMapFragment
     lateinit var googleMap: GoogleMap
     private val markerList = mutableListOf<Marker>()
-    private val handler = Handler(Looper.getMainLooper())
-    private var runnable: Runnable? = null
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val inputBusca = findViewById<EditText>(R.id.inputBusca)
+        val confirmBusca = findViewById<Button>(R.id.confirmBusca)
+
+        confirmBusca.setOnClickListener {
+            val textoBusca = inputBusca.text.toString()
+            runOnUiThread(this@MainActivity, textoBusca)
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        }
 
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback {
@@ -47,46 +53,27 @@ class MainActivity : AppCompatActivity() {
             val zoomLevel = 12f
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locInicial, zoomLevel))
         })
-        val inputBusca = findViewById<EditText>(R.id.inputBusca)
-        inputBusca.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                var textoBusca = s.toString()
-
-                runOnUiThread(this@MainActivity, textoBusca)
-            }
-        })
-
-        inputBusca.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                var textoBusca = s.toString()
-                runnable?.let { handler.removeCallbacks(it) }
-                runnable = Runnable { runOnUiThread(this@MainActivity, textoBusca) }
-                handler.postDelayed(runnable!!, 500)
-            }
-        })
     }
-    // Dentro da classe MainActivity, adicione a função abaixo
+
     private fun msgNenhumResultadoEncontrado() {
         val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setMessage("Nenhum local encontrado.")
-            .setCancelable(false)
+        dialogBuilder.setMessage("Nenhum local encontrado.").setCancelable(false)
             .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
         val alert = dialogBuilder.create()
         alert.setTitle("Aviso")
         alert.show()
     }
 
+    private fun limparInput(input: EditText) {
+        input.text.clear()
+        markerList.clear()
+
+    }
+
     private fun runOnUiThread(context: Context, textoBusca: String) {
         val client = OkHttpClient()
-        var request = Request.Builder()
+        val request = Request.Builder()
             .url("https://thaianramalho.com/api_belizario/locaisAtendimento.php?senha=dxic5CyB&busca=$textoBusca")
             .build()
 
@@ -101,6 +88,9 @@ class MainActivity : AppCompatActivity() {
                 if (responseData == "Nenhum resultado encontrado.") {
                     runOnUiThread {
                         msgNenhumResultadoEncontrado()
+                        val inputBusca = findViewById<EditText>(R.id.inputBusca)
+
+                        limparInput(inputBusca)
                     }
                 } else {
                     responseData?.let {
