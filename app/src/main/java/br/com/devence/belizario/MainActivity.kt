@@ -2,7 +2,11 @@ package br.com.devence.belizario
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -10,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import okhttp3.Call
@@ -23,9 +28,12 @@ data class LocalizacaoApi(val nome: String, val latlng: String)
 
 class MainActivity : AppCompatActivity() {
 
-    private var mContext: Context? = null
     lateinit var mapFragment: SupportMapFragment
     lateinit var googleMap: GoogleMap
+    private val markerList = mutableListOf<Marker>()
+    private val handler = Handler(Looper.getMainLooper())
+    private var runnable: Runnable? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,13 +47,47 @@ class MainActivity : AppCompatActivity() {
             val zoomLevel = 12f
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locInicial, zoomLevel))
         })
-        runOnUiThread(this)
+        val inputBusca = findViewById<EditText>(R.id.inputBusca)
+        inputBusca.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                var textoBusca = s.toString()
+
+                runOnUiThread(this@MainActivity, textoBusca)
+            }
+        })
+
+        inputBusca.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                var textoBusca = s.toString()
+                runnable?.let { handler.removeCallbacks(it) }
+                runnable = Runnable { runOnUiThread(this@MainActivity, textoBusca) }
+                handler.postDelayed(runnable!!, 500)
+            }
+        })
+    }
+    // Dentro da classe MainActivity, adicione a função abaixo
+    private fun msgNenhumResultadoEncontrado() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setMessage("Nenhum local encontrado.")
+            .setCancelable(false)
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+        val alert = dialogBuilder.create()
+        alert.setTitle("Aviso")
+        alert.show()
     }
 
-    private fun runOnUiThread(context: Context) {
+    private fun runOnUiThread(context: Context, textoBusca: String) {
         val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("https://thaianramalho.com/api_belizario/locaisAtendimento.php?senha=dxic5CyB")
+        var request = Request.Builder()
+            .url("https://thaianramalho.com/api_belizario/locaisAtendimento.php?senha=dxic5CyB&busca=$textoBusca")
             .build()
 
         client.newCall(request).enqueue(object : Callback {
@@ -55,22 +97,36 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseData = response.body?.string()
-                Log.d("Resposta da API", responseData ?: "API sem resposta")
 
-                // Aqui você precisa analisar a resposta da API e adicionar marcadores ao mapa
-                responseData?.let {
-                    val localizacoesApi = Gson().fromJson(it, Array<LocalizacaoApi>::class.java)
-
+                if (responseData == "Nenhum resultado encontrado.") {
                     runOnUiThread {
-                        localizacoesApi.forEach { localizacao ->
-                            val latLngArray = localizacao.latlng.split(",")
-                            if (latLngArray.size == 2) {
-                                val latitude = latLngArray[0].toDouble()
-                                val longitude = latLngArray[1].toDouble()
-                                val locInicial = LatLng(latitude, longitude)
-                                googleMap.addMarker(
-                                    MarkerOptions().position(locInicial).title(localizacao.nome)
-                                )
+                        msgNenhumResultadoEncontrado()
+                    }
+                } else {
+                    responseData?.let {
+                        val localizacoesApi = Gson().fromJson(it, Array<LocalizacaoApi>::class.java)
+
+                        runOnUiThread {
+                            for (marker in markerList) {
+                                marker.remove()
+                            }
+                            markerList.clear()
+
+                            localizacoesApi.forEach { localizacao ->
+                                val latLngArray = localizacao.latlng.split(",")
+                                if (latLngArray.size == 2) {
+                                    val latitude = latLngArray[0].toDouble()
+                                    val longitude = latLngArray[1].toDouble()
+                                    val locInicial = LatLng(latitude, longitude)
+                                    val marker = googleMap.addMarker(
+                                        MarkerOptions().position(locInicial).title(localizacao.nome)
+                                    )
+                                    if (marker != null) {
+                                        markerList.add(marker)
+                                    } else {
+                                        markerList.clear()
+                                    }
+                                }
                             }
                         }
                     }
@@ -78,6 +134,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
 
     private fun showErrorDialog(context: Context) {
         runOnUiThread {
