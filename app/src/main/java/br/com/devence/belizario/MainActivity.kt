@@ -1,17 +1,23 @@
 package br.com.devence.belizario
 
+import LocationAdapter
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Filter
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.HtmlCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -163,6 +169,38 @@ class MainActivity : AppCompatActivity() {
                             }
                             markerList.clear()
 
+                            //aqui cacontece a listagem do resultado em baixo do botao de enviar.
+                            val listaLocais = findViewById<TextView>(R.id.listaLocais)
+                            listaLocais.visibility = View.VISIBLE
+
+                            localizacoesApi.forEach { localizacao ->
+                                val btn = Button(this@MainActivity)
+                                val params = LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                                )
+                                params.setMargins(0, 16, 0, 0)
+                                btn.layoutParams = params
+
+                                val buttonText = "<b>${localizacao.nome}</b><br/>Lat: ${localizacao.latlng.split(",")[0]}, Lng: ${localizacao.latlng.split(",")[1]}"
+                                btn.text = HtmlCompat.fromHtml(buttonText, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                                btn.setBackgroundResource(android.R.drawable.btn_default)
+                                btn.setOnClickListener {
+                                    val latLngArray = localizacao.latlng.split(",")
+                                    if (latLngArray.size == 2) {
+                                        val latitude = latLngArray[0].toDouble()
+                                        val longitude = latLngArray[1].toDouble()
+                                        val loc = LatLng(latitude, longitude)
+                                        val zoomLevel = 12f
+                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, zoomLevel))
+                                    }
+                                }
+
+                                val layout = findViewById<LinearLayout>(R.id.layoutPrincipal)
+                                layout.addView(btn)
+                            }
+
+
                             localizacoesApi.forEach { localizacao ->
                                 val latLngArray = localizacao.latlng.split(",")
                                 if (latLngArray.size == 2) {
@@ -186,6 +224,7 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 }
                             }
+
                         }
                     }
                 }
