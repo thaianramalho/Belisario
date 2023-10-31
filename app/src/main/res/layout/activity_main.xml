@@ -7,9 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <FrameLayout
+        android:id="@+id/mapContainer"
         android:layout_width="0dp"
         android:layout_height="500dp"
         android:layout_marginStart="20dp"
@@ -18,7 +17,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titulo" />
+        app:layout_constraintTop_toBottomOf="@+id/titulo">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/border" />
+
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/titulo"
@@ -37,9 +50,9 @@
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
-        android:hint="Digite o que está sentindo"
+        android:hint="Digite o que está sentindo..."
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/map" />
+        app:layout_constraintTop_toBottomOf="@+id/mapContainer" />
 
     <Button
         android:id="@+id/confirmBusca"
@@ -52,6 +65,6 @@
         android:text="Enviar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/inputBusca"
-        app:layout_constraintTop_toBottomOf="@+id/map" />
+        app:layout_constraintTop_toBottomOf="@+id/mapContainer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
