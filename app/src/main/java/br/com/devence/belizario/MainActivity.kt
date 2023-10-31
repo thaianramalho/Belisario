@@ -2,9 +2,14 @@ package br.com.devence.belizario
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Filter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -20,7 +25,9 @@ import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.json.JSONArray
 import java.io.IOException
+import java.text.Normalizer
 
 data class LocalizacaoApi(val nome: String, val latlng: String)
 
@@ -33,10 +40,58 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.inputBusca)
         val inputBusca = findViewById<EditText>(R.id.inputBusca)
         val confirmBusca = findViewById<Button>(R.id.confirmBusca)
         val locInicial = LatLng(-21.19596944477334, -43.792077649345096)
         val zoomLevel = 12f
+
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://thaianramalho.com/api_belizario/sintomas.php?senha=dxic5CyB").build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                showErrorDialog(this@MainActivity)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseData = response.body?.string()
+                responseData?.let {
+                    val jsonArray = JSONArray(it)
+                    val suggestions = mutableListOf<String>()
+                    for (i in 0 until jsonArray.length()) {
+                        val obj = jsonArray.getJSONObject(i)
+                        val nome = obj.getString("nome")
+                        suggestions.add(nome)
+                    }
+                    runOnUiThread {
+                        val adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_dropdown_item_1line, suggestions)
+                        autoCompleteTextView.setAdapter(adapter)
+                        autoCompleteTextView.threshold = 1
+                        autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
+                            val selectedItem = parent.getItemAtPosition(position) as String
+                            autoCompleteTextView.setText(selectedItem, false)
+                        }
+                        autoCompleteTextView.addTextChangedListener(object : TextWatcher {
+                            override fun afterTextChanged(s: Editable?) {}
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                                adapter.filter.filter(s, object : Filter.FilterListener {
+                                    override fun onFilterComplete(count: Int) {
+                                        if (count == 0) {
+                                            autoCompleteTextView.dismissDropDown()
+                                        } else {
+                                            autoCompleteTextView.showDropDown()
+                                        }
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }
+            }
+        })
 
         confirmBusca.setOnClickListener {
             val textoBusca = inputBusca.text.toString()
@@ -54,6 +109,12 @@ class MainActivity : AppCompatActivity() {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locInicial, zoomLevel))
         })
 
+    }
+
+    private fun removeAccents(input: String): String {
+        val regexUnaccent = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+        val temp = Normalizer.normalize(input, Normalizer.Form.NFD)
+        return regexUnaccent.replace(temp, "")
     }
 
     private fun msgNenhumResultadoEncontrado() {
