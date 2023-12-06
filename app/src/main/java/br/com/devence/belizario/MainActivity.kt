@@ -23,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
@@ -72,7 +73,11 @@ class MainActivity : AppCompatActivity() {
                         suggestions.add(nome)
                     }
                     runOnUiThread {
-                        val adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_dropdown_item_1line, suggestions)
+                        val adapter = ArrayAdapter(
+                            this@MainActivity,
+                            android.R.layout.simple_dropdown_item_1line,
+                            suggestions
+                        )
                         autoCompleteTextView.setAdapter(adapter)
                         autoCompleteTextView.threshold = 1
                         autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
@@ -81,8 +86,20 @@ class MainActivity : AppCompatActivity() {
                         }
                         autoCompleteTextView.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(s: Editable?) {}
-                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            override fun beforeTextChanged(
+                                s: CharSequence?,
+                                start: Int,
+                                count: Int,
+                                after: Int
+                            ) {
+                            }
+
+                            override fun onTextChanged(
+                                s: CharSequence?,
+                                start: Int,
+                                before: Int,
+                                count: Int
+                            ) {
                                 adapter.filter.filter(s, object : Filter.FilterListener {
                                     override fun onFilterComplete(count: Int) {
                                         if (count == 0) {
@@ -141,7 +158,7 @@ class MainActivity : AppCompatActivity() {
     private fun runOnUiThread(context: Context, textoBusca: String) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://thaianramalho.com/api_belizario/atendimento.php?senha=dxic5CyB&busca=$textoBusca")
+            .url("https://thaianramalho.com/api_belizario/atendimento.php?senha=dxic5CyB&sintoma=${textoBusca}")
             .build()
 
         client.newCall(request).enqueue(object : Callback {
@@ -161,7 +178,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     responseData?.let {
-                        val localizacoesApi = Gson().fromJson(it, Array<LocalizacaoApi>::class.java)
+                        val jsonArray = JSONArray(it)
+                        val localizacoesApi =
+                            Gson().fromJson(it, Array<LocalizacaoApi>::class.java).toList()
+
 
                         runOnUiThread {
                             for (marker in markerList) {
@@ -169,7 +189,6 @@ class MainActivity : AppCompatActivity() {
                             }
                             markerList.clear()
 
-                            //aqui cacontece a listagem do resultado em baixo do botao de enviar.
                             val listaLocais = findViewById<TextView>(R.id.listaLocais)
                             listaLocais.visibility = View.VISIBLE
 
@@ -182,8 +201,13 @@ class MainActivity : AppCompatActivity() {
                                 params.setMargins(0, 16, 0, 0)
                                 btn.layoutParams = params
 
-                                val buttonText = "<b>${localizacao.nome}</b><br/>Lat: ${localizacao.latlng.split(",")[0]}, Lng: ${localizacao.latlng.split(",")[1]}"
-                                btn.text = HtmlCompat.fromHtml(buttonText, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                                val buttonText = "<b>${localizacao.nome}</b><br/>Lat: ${
+                                    localizacao.latlng.split(",")[0]
+                                }, Lng: ${localizacao.latlng.split(",")[1]}"
+                                btn.text = HtmlCompat.fromHtml(
+                                    buttonText,
+                                    HtmlCompat.FROM_HTML_MODE_COMPACT
+                                )
                                 btn.setBackgroundResource(android.R.drawable.btn_default)
                                 btn.setOnClickListener {
                                     val latLngArray = localizacao.latlng.split(",")
@@ -192,7 +216,12 @@ class MainActivity : AppCompatActivity() {
                                         val longitude = latLngArray[1].toDouble()
                                         val loc = LatLng(latitude, longitude)
                                         val zoomLevel = 12f
-                                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, zoomLevel))
+                                        googleMap.animateCamera(
+                                            CameraUpdateFactory.newLatLngZoom(
+                                                loc,
+                                                zoomLevel
+                                            )
+                                        )
                                     }
                                 }
 
@@ -207,12 +236,6 @@ class MainActivity : AppCompatActivity() {
                                     val latitude = latLngArray[0].toDouble()
                                     val longitude = latLngArray[1].toDouble()
                                     val locInicial = LatLng(latitude, longitude)
-                                    val zoomLevel = 12f
-                                    googleMap.animateCamera(
-                                        CameraUpdateFactory.newLatLngZoom(
-                                            locInicial, zoomLevel
-                                        )
-                                    )
 
                                     val marker = googleMap.addMarker(
                                         MarkerOptions().position(locInicial).title(localizacao.nome)
@@ -223,6 +246,18 @@ class MainActivity : AppCompatActivity() {
                                         markerList.clear()
                                     }
                                 }
+                            }
+                            if (markerList.isNotEmpty()) {
+                                val bounds = LatLngBounds.builder()
+                                for (marker in markerList) {
+                                    bounds.include(marker.position)
+                                }
+                                googleMap.animateCamera(
+                                    CameraUpdateFactory.newLatLngBounds(
+                                        bounds.build(),
+                                        100
+                                    )
+                                )
                             }
 
                         }
