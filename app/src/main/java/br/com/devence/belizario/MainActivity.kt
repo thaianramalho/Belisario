@@ -173,7 +173,6 @@ class MainActivity : AppCompatActivity() {
                     runOnUiThread {
                         msgNenhumResultadoEncontrado()
                         val inputBusca = findViewById<EditText>(R.id.inputBusca)
-
                         limparInput(inputBusca)
                     }
                 } else {
@@ -201,9 +200,9 @@ class MainActivity : AppCompatActivity() {
                                 params.setMargins(0, 16, 0, 0)
                                 btn.layoutParams = params
 
-                                val buttonText = "<b>${localizacao.nome}</b><br/>Lat: ${
+                                val buttonText = "<b>${localizacao.nome}</b><br/>Latitude: ${
                                     localizacao.latlng.split(",")[0]
-                                }, Lng: ${localizacao.latlng.split(",")[1]}"
+                                }, Longitude: ${localizacao.latlng.split(",")[1]}"
                                 btn.text = HtmlCompat.fromHtml(
                                     buttonText,
                                     HtmlCompat.FROM_HTML_MODE_COMPACT
@@ -215,7 +214,7 @@ class MainActivity : AppCompatActivity() {
                                         val latitude = latLngArray[0].toDouble()
                                         val longitude = latLngArray[1].toDouble()
                                         val loc = LatLng(latitude, longitude)
-                                        val zoomLevel = 12f
+                                        val zoomLevel = 16f
                                         googleMap.animateCamera(
                                             CameraUpdateFactory.newLatLngZoom(
                                                 loc,
