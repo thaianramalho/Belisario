@@ -38,9 +38,12 @@ import java.io.IOException
 import java.text.Normalizer
 import android.content.pm.PackageManager
 import android.location.Location
+import android.widget.ImageButton
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import org.w3c.dom.Text
 
 
 data class LocalizacaoApi(val nome: String, val latlng: String)
@@ -50,6 +53,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var mapFragment: SupportMapFragment
     lateinit var googleMap: GoogleMap
     private val markerList = mutableListOf<Marker>()
+    private var markerMaisProximo: LatLng? = null
+    private var distanciaMaisProxima: Float = Float.MAX_VALUE
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -62,13 +69,18 @@ class MainActivity : AppCompatActivity() {
 
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.inputBusca)
         val inputBusca = findViewById<EditText>(R.id.inputBusca)
-        val confirmBusca = findViewById<Button>(R.id.confirmBusca)
+        val confirmBusca = findViewById<ImageButton>(R.id.confirmBusca)
+        val limparInputBusca = findViewById<ImageButton>(R.id.limparInput)
         val locInicial = LatLng(-21.22332575411119, -43.77215283547053)
         val zoomLevel = 13f
 
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("https://thaianramalho.com/api_belizario/sintomas.php?senha=dxic5CyB").build()
+
+        limparInputBusca.setOnClickListener {
+            limparInput(inputBusca)
+        }
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -129,9 +141,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+
+
         confirmBusca.setOnClickListener {
             val textoBusca = inputBusca.text.toString()
-            runOnUiThread(this@MainActivity, textoBusca)
+            markerMaisProximo = null
+            distanciaMaisProxima = Float.MAX_VALUE
+            runOnUiThread(this@MainActivity, textoBusca, locInicial)
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
         }
@@ -146,6 +162,7 @@ class MainActivity : AppCompatActivity() {
         })
 
     }
+
 
     private fun obterLocalizacaoAtual() {
         val fusedLocationClient: FusedLocationProviderClient =
@@ -165,7 +182,13 @@ class MainActivity : AppCompatActivity() {
             .addOnSuccessListener { location: Location? ->
                 if (location != null) {
                     val locInicial = LatLng(location.latitude, location.longitude)
-                    val zoomLevel = 13f
+                    val markerIcon =
+                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                    googleMap.addMarker(
+                        MarkerOptions().position(locInicial).title("Sua Localização")
+                            .icon(markerIcon)
+                    )
+                    val zoomLevel = 14f
                     zoomLevel
                     googleMap.animateCamera(
                         CameraUpdateFactory.newLatLngZoom(
@@ -221,13 +244,13 @@ class MainActivity : AppCompatActivity() {
         alert.show()
     }
 
-    private fun limparInput(input: EditText) {
+    fun limparInput(input: EditText) {
         input.text.clear()
         markerList.clear()
 
     }
 
-    private fun runOnUiThread(context: Context, textoBusca: String) {
+    private fun runOnUiThread(context: Context, textoBusca: String, userLocation: LatLng) {
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("https://thaianramalho.com/api_belizario/atendimento.php?senha=dxic5CyB&sintoma=${textoBusca}")
@@ -262,6 +285,8 @@ class MainActivity : AppCompatActivity() {
 
                             val listaLocais = findViewById<TextView>(R.id.listaLocais)
                             listaLocais.visibility = View.VISIBLE
+                            val outrasOpcoes = findViewById<TextView>(R.id.outrasOpcoes)
+                            outrasOpcoes.visibility = View.VISIBLE
 
                             localizacoesApi.forEach { localizacao ->
                                 val btn = Button(this@MainActivity)
@@ -306,10 +331,18 @@ class MainActivity : AppCompatActivity() {
                                 if (latLngArray.size == 2) {
                                     val latitude = latLngArray[0].toDouble()
                                     val longitude = latLngArray[1].toDouble()
-                                    val locInicial = LatLng(latitude, longitude)
+                                    val locAtendimento = LatLng(latitude, longitude)
+
+                                    val distancia = calcularDistancia(userLocation, locAtendimento)
+
+                                    if (markerMaisProximo == null || distancia < distanciaMaisProxima) {
+                                        markerMaisProximo = locAtendimento
+                                        distanciaMaisProxima = distancia
+                                    }
 
                                     val marker = googleMap.addMarker(
-                                        MarkerOptions().position(locInicial).title(localizacao.nome)
+                                        MarkerOptions().position(locAtendimento)
+                                            .title(localizacao.nome)
                                     )
                                     if (marker != null) {
                                         markerList.add(marker)
@@ -318,15 +351,13 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 }
                             }
-                            if (markerList.isNotEmpty()) {
-                                val bounds = LatLngBounds.builder()
-                                for (marker in markerList) {
-                                    bounds.include(marker.position)
-                                }
+
+                            markerMaisProximo?.let {
+                                val zoomLevel = 16f
                                 googleMap.animateCamera(
-                                    CameraUpdateFactory.newLatLngBounds(
-                                        bounds.build(),
-                                        100
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        it,
+                                        zoomLevel
                                     )
                                 )
                             }
@@ -337,7 +368,17 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-    
+
+    private fun calcularDistancia(location1: LatLng, location2: LatLng): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(
+            location1.latitude, location1.longitude,
+            location2.latitude, location2.longitude,
+            results
+        )
+        return results[0]
+    }
+
     private fun showErrorDialog(context: Context) {
         runOnUiThread {
             val builder = AlertDialog.Builder(context)
