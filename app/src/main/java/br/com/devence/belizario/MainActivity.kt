@@ -2,6 +2,7 @@ package br.com.devence.belizario
 
 import LocationAdapter
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -37,8 +38,10 @@ import org.json.JSONArray
 import java.io.IOException
 import java.text.Normalizer
 import android.content.pm.PackageManager
+import android.icu.lang.UScript.ScriptUsage
 import android.location.Location
 import android.widget.ImageButton
+import android.widget.ScrollView
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -147,6 +150,12 @@ class MainActivity : AppCompatActivity() {
             val textoBusca = inputBusca.text.toString()
             markerMaisProximo = null
             distanciaMaisProxima = Float.MAX_VALUE
+
+            for (marker in markerList) {
+                marker.remove()
+            }
+            markerList.clear()
+
             runOnUiThread(this@MainActivity, textoBusca, locInicial)
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
@@ -261,6 +270,7 @@ class MainActivity : AppCompatActivity() {
                 showErrorDialog(context)
             }
 
+            @SuppressLint("CutPasteId")
             override fun onResponse(call: Call, response: Response) {
                 val responseData = response.body?.string()
 
