@@ -1,6 +1,7 @@
 package br.com.devence.belizario
 
 import LocationAdapter
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -35,6 +36,12 @@ import okhttp3.Response
 import org.json.JSONArray
 import java.io.IOException
 import java.text.Normalizer
+import android.content.pm.PackageManager
+import android.location.Location
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+
 
 data class LocalizacaoApi(val nome: String, val latlng: String)
 
@@ -47,11 +54,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            obterLocalizacaoAtual()
+        } else {
+            requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        }
+
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.inputBusca)
         val inputBusca = findViewById<EditText>(R.id.inputBusca)
         val confirmBusca = findViewById<Button>(R.id.confirmBusca)
-        val locInicial = LatLng(-21.19596944477334, -43.792077649345096)
-        val zoomLevel = 12f
+        val locInicial = LatLng(-21.22332575411119, -43.77215283547053)
+        val zoomLevel = 13f
 
         val client = OkHttpClient()
         val request = Request.Builder()
@@ -134,11 +147,70 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun removeAccents(input: String): String {
-        val regexUnaccent = "\\p{InCombiningDiacriticalMarks}+".toRegex()
-        val temp = Normalizer.normalize(input, Normalizer.Form.NFD)
-        return regexUnaccent.replace(temp, "")
+    private fun obterLocalizacaoAtual() {
+        val fusedLocationClient: FusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(this)
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    val locInicial = LatLng(location.latitude, location.longitude)
+                    val zoomLevel = 13f
+                    zoomLevel
+                    googleMap.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            locInicial,
+                            zoomLevel
+                        )
+                    )
+                } else {
+                    exibirMensagemErro("Não foi possível obter a localização.")
+
+                }
+            }
+            .addOnFailureListener { e ->
+                exibirMensagemErro("Falha na obtenção da localização. Verifique as configurações de localização do dispositivo.")
+            }
     }
+
+    private fun exibirMensagemErro(mensagem: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Erro")
+        builder.setMessage(mensagem)
+        builder.setPositiveButton("OK", null)
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permissão concedida, obter a localização atual
+                obterLocalizacaoAtual()
+            } else {
+                // Permissão negada, tratar conforme necessário
+                // Por exemplo, exibir uma mensagem ao usuário
+            }
+        }
+    }
+
 
     private fun msgNenhumResultadoEncontrado() {
         val dialogBuilder = AlertDialog.Builder(this)
@@ -265,8 +337,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
-
+    
     private fun showErrorDialog(context: Context) {
         runOnUiThread {
             val builder = AlertDialog.Builder(context)
