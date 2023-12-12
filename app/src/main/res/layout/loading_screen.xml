@@ -4,48 +4,91 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/titulo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/backgroundAtivo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ativo7" />
+
+    <ImageView
+        android:id="@+id/belisarioLogo"
+        android:layout_width="321dp"
+        android:layout_height="354dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:gravity="center"
-        android:text="Belizário"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="30dp"
+        app:srcCompat="@drawable/belisario_logo" />
 
     <ProgressBar
         android:id="@+id/loadingProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
-
-    <TextView
-        android:id="@+id/textDisclaimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:justificationMode="inter_word"
-        android:text="O Belizário é um serviço de informações de rotas de atendimentos SUS na sua cidade.\n\nEle não substitui, EM QUAISQUER HIPÓTESES, orientações médicas. \n\nApenas um profissional poderá indicar qual é seu caso. \n\nProcure a unidade de atendimento ideal para seu sintoma de momento."
-        android:textAlignment="textStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+        android:layout_above="@+id/textLoading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:progressBackgroundTint="#79C8E9"
+        android:progressTint="#79C8E9" />
 
     <TextView
         android:id="@+id/textLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/loadingProgressBar"
+
+        android:layout_above="@+id/textDisclaimer"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
+        android:layout_marginBottom="50dp"
         android:text="Carregando..."
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="#78C8E9"
+        android:textColorHighlight="#326D85"
+        android:textColorLink="#60A7C5" />
+
+    <TextView
+        android:id="@+id/textDisclaimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textInfo"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="30dp"
+        android:fontFamily="@font/montserrat_medium"
+        android:justificationMode="inter_word"
+        android:text="Belisário: guia de rotas para atendimentos no SUS."
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="#7AC7EA"
+        android:textColorHighlight="#7AC7EA"
+        android:textColorLink="#7AC7EA"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/textInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/montserrat_medium"
+        android:justificationMode="inter_word"
+        android:text="Não substituímos orientações médicas."
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="#62CFD4"
+        android:textColorHighlight="#62CFD4"
+        android:textColorLink="#62CFD4" />
+
 </RelativeLayout>
