@@ -115,18 +115,12 @@ class MainActivity : AppCompatActivity() {
                         autoCompleteTextView.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(s: Editable?) {}
                             override fun beforeTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                count: Int,
-                                after: Int
+                                s: CharSequence?, start: Int, count: Int, after: Int
                             ) {
                             }
 
                             override fun onTextChanged(
-                                s: CharSequence?,
-                                start: Int,
-                                before: Int,
-                                count: Int
+                                s: CharSequence?, start: Int, before: Int, count: Int
                             ) {
                                 adapter.filter.filter(s, object : Filter.FilterListener {
                                     override fun onFilterComplete(count: Int) {
@@ -178,41 +172,35 @@ class MainActivity : AppCompatActivity() {
             LocationServices.getFusedLocationProviderClient(this)
 
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                this, Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+                this, Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             return
         }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    val locInicial = LatLng(location.latitude, location.longitude)
-                    val markerIcon =
-                        BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
-                    googleMap.addMarker(
-                        MarkerOptions().position(locInicial).title("Sua Localização")
-                            .icon(markerIcon)
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                val locInicial = LatLng(location.latitude, location.longitude)
+                val markerIcon =
+                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                googleMap.addMarker(
+                    MarkerOptions().position(locInicial).title("Sua Localização").icon(markerIcon)
+                )
+                val zoomLevel = 14f
+                zoomLevel
+                googleMap.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        locInicial, zoomLevel
                     )
-                    val zoomLevel = 14f
-                    zoomLevel
-                    googleMap.animateCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            locInicial,
-                            zoomLevel
-                        )
-                    )
-                } else {
-                    exibirMensagemErro("Não foi possível obter a localização.")
+                )
+            } else {
+                exibirMensagemErro("Não foi possível obter a localização.")
 
-                }
             }
-            .addOnFailureListener { e ->
-                exibirMensagemErro("Falha na obtenção da localização. Verifique as configurações de localização do dispositivo.")
-            }
+        }.addOnFailureListener { e ->
+            exibirMensagemErro("Falha na obtenção da localização. Verifique as configurações de localização do dispositivo.")
+        }
     }
 
     private fun exibirMensagemErro(mensagem: String) {
@@ -226,9 +214,7 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
@@ -288,15 +274,21 @@ class MainActivity : AppCompatActivity() {
 
 
                         runOnUiThread {
+                            val layout = findViewById<LinearLayout>(R.id.layoutPrincipal)
+                            layout.removeAllViews()
+
                             for (marker in markerList) {
-                                marker.remove()
+                                marker?.remove()
                             }
                             markerList.clear()
 
                             val listaLocais = findViewById<TextView>(R.id.listaLocais)
-                            listaLocais.visibility = View.VISIBLE
+                            listaLocais?.text = ""
+                            listaLocais?.visibility = View.VISIBLE
+
                             val outrasOpcoes = findViewById<TextView>(R.id.outrasOpcoes)
-                            outrasOpcoes.visibility = View.VISIBLE
+                            outrasOpcoes?.visibility = View.VISIBLE
+
 
                             localizacoesApi.forEach { localizacao ->
                                 val btn = Button(this@MainActivity)
@@ -311,8 +303,7 @@ class MainActivity : AppCompatActivity() {
                                     localizacao.latlng.split(",")[0]
                                 }, Longitude: ${localizacao.latlng.split(",")[1]}"
                                 btn.text = HtmlCompat.fromHtml(
-                                    buttonText,
-                                    HtmlCompat.FROM_HTML_MODE_COMPACT
+                                    buttonText, HtmlCompat.FROM_HTML_MODE_COMPACT
                                 )
                                 btn.setBackgroundResource(android.R.drawable.btn_default)
                                 btn.setOnClickListener {
@@ -324,14 +315,14 @@ class MainActivity : AppCompatActivity() {
                                         val zoomLevel = 16f
                                         googleMap.animateCamera(
                                             CameraUpdateFactory.newLatLngZoom(
-                                                loc,
-                                                zoomLevel
+                                                loc, zoomLevel
                                             )
                                         )
                                     }
                                 }
 
                                 val layout = findViewById<LinearLayout>(R.id.layoutPrincipal)
+
                                 layout.addView(btn)
                             }
 
@@ -366,8 +357,7 @@ class MainActivity : AppCompatActivity() {
                                 val zoomLevel = 16f
                                 googleMap.animateCamera(
                                     CameraUpdateFactory.newLatLngZoom(
-                                        it,
-                                        zoomLevel
+                                        it, zoomLevel
                                     )
                                 )
                             }
@@ -382,8 +372,10 @@ class MainActivity : AppCompatActivity() {
     private fun calcularDistancia(location1: LatLng, location2: LatLng): Float {
         val results = FloatArray(1)
         Location.distanceBetween(
-            location1.latitude, location1.longitude,
-            location2.latitude, location2.longitude,
+            location1.latitude,
+            location1.longitude,
+            location2.latitude,
+            location2.longitude,
             results
         )
         return results[0]
