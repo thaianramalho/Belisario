@@ -49,12 +49,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:hint="Digite o que está sentindo..."
+        android:minHeight="48dp"
         android:textColorHint="#8D6E63"
-        app:layout_constraintTop_toBottomOf="@+id/mapContainer"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/limparInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mapContainer"
         app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.7"/>
+        app:layout_constraintWidth_percent="0.7" />
 
     <ImageButton
         android:id="@+id/limparInput"
