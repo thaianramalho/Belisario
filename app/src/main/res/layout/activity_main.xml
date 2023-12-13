@@ -49,54 +49,82 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/bgMenuSearch">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="119dp" />
-
-        <AutoCompleteTextView
-            android:id="@+id/inputBusca"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Digite o que está sentindo..."
-            android:minHeight="48dp"
-            android:textColorHint="#8D6E63"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            android:layout_marginEnd="5dp"
+            android:gravity="center"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusTopStart="8dp"
+            app:hintEnabled="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cardLimparInput"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/limparInput"
+            <AutoCompleteTextView
+                android:id="@+id/inputBusca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_edittext"
+                android:hint="Digite o que está sentindo..."
+                android:minHeight="48dp"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:textColorHint="#8D6E63" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardLimparInput"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:backgroundTint="#F74040"
-            android:contentDescription="Limpar Busca"
-            android:padding="10dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            app:layout_constraintStart_toEndOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="5dp"
+            android:foregroundGravity="right"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cardConfirmBusca"
+            app:layout_constraintStart_toEndOf="@+id/textInputLayout"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
-            android:id="@+id/confirmBusca"
+            <ImageButton
+                android:id="@+id/limparInput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#FEFEFE"
+                android:contentDescription="Limpar Busca"
+                android:padding="5dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardConfirmBusca"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:backgroundTint="#00BA8E"
-            android:contentDescription="Buscar"
-            android:padding="10dp"
-            android:src="@android:drawable/ic_menu_search"
-            app:layout_constraintStart_toEndOf="@+id/limparInput"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/cardLimparInput"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="28dp" />
+            <ImageButton
+                android:id="@+id/confirmBusca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#FEFEFE"
+                android:contentDescription="Buscar"
+                android:padding="5dp"
+                android:src="@android:drawable/ic_menu_search" />
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -124,9 +152,11 @@
                 android:id="@+id/listaLocais"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/circular"
+                android:padding="5dp"
+                android:textAlignment="center"
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 

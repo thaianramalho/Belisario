@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 class LoadingActivity : AppCompatActivity() {
 
-    private val loadingTime: Long = 3000
+    private val loadingTime: Long = 2500
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

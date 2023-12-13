@@ -10,19 +10,21 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Filter
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -137,18 +139,28 @@ class MainActivity : AppCompatActivity() {
 
         confirmBusca.setOnClickListener {
             val textoBusca = inputBusca.text.toString()
-            markerMaisProximo = null
-            distanciaMaisProxima = Float.MAX_VALUE
 
-            for (marker in markerList) {
-                marker.remove()
+            if (textoBusca.isNotEmpty()) {
+                markerMaisProximo = null
+                distanciaMaisProxima = Float.MAX_VALUE
+
+                for (marker in markerList) {
+                    marker.remove()
+                }
+                markerList.clear()
+
+                runOnUiThread(this@MainActivity, textoBusca, locInicial)
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+            } else {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Digite algum sintoma para realizar a busca.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-            markerList.clear()
-
-            runOnUiThread(this@MainActivity, textoBusca, locInicial)
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
         }
+
 
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback {
@@ -199,12 +211,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun exibirMensagemErro(mensagem: String) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Erro")
-        builder.setMessage(mensagem)
-        builder.setPositiveButton("OK", null)
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+        runOnUiThread {
+            Toast.makeText(this@MainActivity, "Erro: $mensagem", Toast.LENGTH_SHORT).show()
+        }
     }
 
 
@@ -226,13 +235,12 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun msgNenhumResultadoEncontrado() {
-        val dialogBuilder = AlertDialog.Builder(this)
-        dialogBuilder.setMessage("Nenhum local encontrado.").setCancelable(false)
-            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
-        val alert = dialogBuilder.create()
-        alert.setTitle("Aviso")
-        alert.show()
+
+        runOnUiThread {
+            Toast.makeText(this@MainActivity, "Nenhum local encontrado.", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     fun limparInput(input: EditText) {
         input.text.clear()
@@ -283,22 +291,35 @@ class MainActivity : AppCompatActivity() {
 
 
                             localizacoesApi.forEach { localizacao ->
-                                val btn = Button(this@MainActivity)
+                                val textView = TextView(this@MainActivity)
                                 val params = LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
                                     LinearLayout.LayoutParams.WRAP_CONTENT
                                 )
                                 params.setMargins(0, 16, 0, 0)
-                                btn.layoutParams = params
+                                textView.layoutParams = params
 
-                                val buttonText = "<b>${localizacao.nome}</b><br/>Latitude: ${
-                                    localizacao.latlng.split(",")[0]
-                                }, Longitude: ${localizacao.latlng.split(",")[1]}"
-                                btn.text = HtmlCompat.fromHtml(
-                                    buttonText, HtmlCompat.FROM_HTML_MODE_COMPACT
+                                val text = "<br/><b>${localizacao.nome}</b><br/>"
+                                textView.text = HtmlCompat.fromHtml(
+                                    text, HtmlCompat.FROM_HTML_MODE_COMPACT
                                 )
-                                btn.setBackgroundResource(android.R.drawable.btn_default)
-                                btn.setOnClickListener {
+
+                                textView.setBackgroundResource(R.drawable.rounded_background)
+
+                                textView.setTextColor(
+                                    ContextCompat.getColor(
+                                        this@MainActivity,
+                                        android.R.color.darker_gray
+                                    )
+                                )
+
+                                textView.textSize = 16f
+
+                                textView.setPadding(10, 10, 10, 10)
+
+                                textView.gravity = Gravity.CENTER
+
+                                textView.setOnClickListener {
                                     val latLngArray = localizacao.latlng.split(",")
                                     if (latLngArray.size == 2) {
                                         val latitude = latLngArray[0].toDouble()
@@ -314,9 +335,12 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                                 val layout = findViewById<LinearLayout>(R.id.layoutPrincipal)
-
-                                layout.addView(btn)
+                                layout.addView(textView)
                             }
+
+
+
+
 
 
                             localizacoesApi.forEach { localizacao ->
