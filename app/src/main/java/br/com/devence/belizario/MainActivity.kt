@@ -263,7 +263,7 @@ class MainActivity : AppCompatActivity() {
 
     fun limparInput(input: EditText) {
         input.text.clear()
-        markerList.clear()
+        limparTudo()
 
     }
 
@@ -287,6 +287,8 @@ class MainActivity : AppCompatActivity() {
                         msgNenhumResultadoEncontrado()
                         val inputBusca = findViewById<EditText>(R.id.inputBusca)
                         limparInput(inputBusca)
+                        limparTudo()
+
                     }
                 } else {
                     responseData?.let {
@@ -424,6 +426,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun limparTudo() {
+
+        for (marker in markerList) {
+            marker?.remove()
+        }
+        markerList.clear()
+
+        val layout = findViewById<LinearLayout>(R.id.layoutPrincipal)
+        layout.removeAllViews()
     }
 
     private fun calcularDistancia(location1: LatLng, location2: LatLng): Float {
