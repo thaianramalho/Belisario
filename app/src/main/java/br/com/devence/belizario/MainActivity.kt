@@ -23,6 +23,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
@@ -74,6 +75,15 @@ class MainActivity : AppCompatActivity() {
         val locInicial = LatLng(-21.22332575411119, -43.77215283547053)
         val zoomLevel = 13f
 
+        val inputsLayout =
+            findViewById<ConstraintLayout>(R.id.main) // Troque para o ID do seu ConstraintLayout principal
+
+        inputsLayout.setOnTouchListener { _, _ ->
+            hideKeyboard(autoCompleteTextView)
+            false
+        }
+
+
         val client = OkHttpClient()
         val request = Request.Builder()
             .url("https://thaianramalho.com/api_belizario/sintomas.php?senha=dxic5CyB").build()
@@ -109,6 +119,10 @@ class MainActivity : AppCompatActivity() {
                             val selectedItem = parent.getItemAtPosition(position) as String
                             autoCompleteTextView.setText(selectedItem, false)
                         }
+
+                        autoCompleteTextView.setOnItemClickListener { _, _, _, _ ->
+                            hideKeyboard(autoCompleteTextView)
+                        }
                         autoCompleteTextView.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(s: Editable?) {}
                             override fun beforeTextChanged(
@@ -132,6 +146,7 @@ class MainActivity : AppCompatActivity() {
                         })
                     }
                 }
+
             }
         })
 
@@ -173,6 +188,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun hideKeyboard(view: View) {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 
     private fun obterLocalizacaoAtual() {
         val fusedLocationClient: FusedLocationProviderClient =

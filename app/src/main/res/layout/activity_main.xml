@@ -87,6 +87,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="5dp"
             android:foregroundGravity="right"
+            app:cardBackgroundColor="#FEFEFE"
             app:cardCornerRadius="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/cardConfirmBusca"
@@ -109,6 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
+            app:cardBackgroundColor="#FEFEFE"
             app:cardCornerRadius="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -152,10 +154,10 @@
                 android:id="@+id/listaLocais"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
                 android:fontFamily="@font/circular"
                 android:padding="5dp"
                 android:textAlignment="center"
+                android:textColor="@android:color/white"
                 android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
