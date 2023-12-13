@@ -1,9 +1,12 @@
 package br.com.devence.belizario
 
-import LocationAdapter
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,18 +17,21 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Filter
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.text.HtmlCompat
-import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
@@ -36,17 +42,6 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONArray
 import java.io.IOException
-import java.text.Normalizer
-import android.content.pm.PackageManager
-import android.icu.lang.UScript.ScriptUsage
-import android.location.Location
-import android.widget.ImageButton
-import android.widget.ScrollView
-import androidx.core.app.ActivityCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import org.w3c.dom.Text
 
 
 data class LocalizacaoApi(val nome: String, val latlng: String)
@@ -286,9 +281,6 @@ class MainActivity : AppCompatActivity() {
                             listaLocais?.text = ""
                             listaLocais?.visibility = View.VISIBLE
 
-                            val outrasOpcoes = findViewById<TextView>(R.id.outrasOpcoes)
-                            outrasOpcoes?.visibility = View.VISIBLE
-
 
                             localizacoesApi.forEach { localizacao ->
                                 val btn = Button(this@MainActivity)
@@ -345,6 +337,28 @@ class MainActivity : AppCompatActivity() {
                                         MarkerOptions().position(locAtendimento)
                                             .title(localizacao.nome)
                                     )
+
+                                    marker?.tag = localizacao
+
+                                    googleMap.setOnInfoWindowClickListener { clickedMarker ->
+                                        val localizacaoClicada =
+                                            clickedMarker.tag as? LocalizacaoApi
+
+                                        if (localizacaoClicada != null) {
+                                            val latLngArray = localizacaoClicada.latlng.split(",")
+                                            if (latLngArray.size == 2) {
+                                                val latitude = latLngArray[0].toDouble()
+                                                val longitude = latLngArray[1].toDouble()
+                                                val intent = Intent(
+                                                    Intent.ACTION_VIEW,
+                                                    Uri.parse("geo:$latitude,$longitude?q=$latitude,$longitude(${localizacaoClicada.nome})")
+                                                )
+                                                startActivity(intent)
+                                            }
+                                        }
+                                    }
+
+
                                     if (marker != null) {
                                         markerList.add(marker)
                                     } else {
