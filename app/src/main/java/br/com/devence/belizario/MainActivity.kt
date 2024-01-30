@@ -13,12 +13,14 @@ import android.text.TextWatcher
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.Filter
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -30,6 +32,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.marginBottom
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -66,6 +69,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        tamanhoLayoutBusca(-400)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         val navView: NavigationView = findViewById(R.id.navigationView)
@@ -173,6 +178,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         confirmBusca.setOnClickListener {
             val textoBusca = inputBusca.text.toString()
+            tamanhoLayoutBusca(0)
 
             if (textoBusca.isNotEmpty()) {
                 markerMaisProximo = null
@@ -360,10 +366,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun tamanhoLayoutBusca(tamanho:Int){
+        val bgMenuSearch = findViewById<ImageView>(R.id.bgMenuSearch)
+        val layoutParams = bgMenuSearch.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParams.bottomMargin = tamanho
+        bgMenuSearch.layoutParams = layoutParams
+    }
 
     fun limparInput(input: EditText) {
         input.text.clear()
         limparTudo()
+        tamanhoLayoutBusca(-400)
 
     }
 
