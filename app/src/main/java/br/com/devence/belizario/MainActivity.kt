@@ -22,6 +22,7 @@ import android.widget.Filter
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -33,6 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -264,27 +266,49 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             // Adicione mais perguntas e respostas conforme necessário
         )
 
-        val layout = LinearLayout(this)
-        layout.orientation = LinearLayout.VERTICAL
-        layout.setPadding(20, 20, 20, 20)
+        val scrollView = ScrollView(this)
+        scrollView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
 
-        for (faqItem in faqItems) {
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(20, 20, 20, 20)
+
+        val marginInDp = 15
+
+        for ((index, faqItem) in faqItems.withIndex()) {
             val perguntaTextView = TextView(this)
             perguntaTextView.text = faqItem.pergunta
             perguntaTextView.textSize = 18f
-            layout.addView(perguntaTextView)
+            linearLayout.addView(perguntaTextView)
 
             val respostaTextView = TextView(this)
             respostaTextView.text = faqItem.resposta
             respostaTextView.textSize = 14f
             respostaTextView.setTextColor(resources.getColor(android.R.color.darker_gray))
             respostaTextView.setPadding(0, 0, 0, 20)
-            layout.addView(respostaTextView)
+            linearLayout.addView(respostaTextView)
+
+            if (index < faqItems.size - 1) {
+                val separator = View(this)
+                val separatorLayoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    1 // Altura da linha de separação em dp
+                )
+                separatorLayoutParams.setMargins(0, marginInDp, 0, marginInDp)
+                separator.layoutParams = separatorLayoutParams
+                separator.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
+                linearLayout.addView(separator)
+            }
         }
+
+        scrollView.addView(linearLayout)
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Perguntas Frequentes")
-        builder.setView(layout)
+        builder.setView(scrollView)
         builder.setPositiveButton("Fechar", null)
 
         val dialog = builder.create()
