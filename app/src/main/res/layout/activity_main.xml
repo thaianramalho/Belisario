@@ -80,10 +80,10 @@
                 android:gravity="center"
                 app:boxBackgroundColor="#FFFFFF"
                 app:boxBackgroundMode="outline"
-                app:boxCornerRadiusBottomEnd="10dp"
-                app:boxCornerRadiusBottomStart="10dp"
-                app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="8dp"
+                app:boxCornerRadiusBottomEnd="15dp"
+                app:boxCornerRadiusBottomStart="15dp"
+                app:boxCornerRadiusTopEnd="15dp"
+                app:boxCornerRadiusTopStart="15dp"
                 app:hintAnimationEnabled="true"
                 app:hintEnabled="false"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -104,7 +104,8 @@
                     android:padding="10dp"
                     android:shadowRadius="5"
                     android:textColor="@android:color/black"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    tools:ignore="TouchTargetSizeCheck" />
 
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -131,7 +132,8 @@
                     android:contentDescription="Limpar Busca"
                     android:padding="5dp"
                     android:src="@android:drawable/ic_menu_close_clear_cancel"
-                    tools:ignore="TouchTargetSizeCheck" />
+                    tools:ignore="TouchTargetSizeCheck"
+                    app:tint="@color/red_search" />
 
             </androidx.cardview.widget.CardView>
 
@@ -155,7 +157,8 @@
                     android:contentDescription="Buscar"
                     android:padding="5dp"
                     android:src="@android:drawable/ic_menu_search"
-                    tools:ignore="TouchTargetSizeCheck" />
+                    tools:ignore="TouchTargetSizeCheck"
+                    app:tint="@color/green_search" />
 
             </androidx.cardview.widget.CardView>
 

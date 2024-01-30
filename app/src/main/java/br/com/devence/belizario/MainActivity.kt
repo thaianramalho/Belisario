@@ -9,6 +9,8 @@ import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
+import android.text.Spanned
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.MenuItem
@@ -68,6 +70,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var distanciaMaisProxima: Float = Float.MAX_VALUE
 
 
+    val filter = object : InputFilter {
+        override fun filter(
+            source: CharSequence?,
+            start: Int,
+            end: Int,
+            dest: Spanned?,
+            dstart: Int,
+            dend: Int
+        ): CharSequence? {
+            return source?.toString()?.replace("\n", "")
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -140,6 +154,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             suggestions
                         )
                         autoCompleteTextView.setAdapter(adapter)
+                        autoCompleteTextView.filters = arrayOf(filter)
                         autoCompleteTextView.threshold = 1
                         autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
                             val selectedItem = parent.getItemAtPosition(position) as String
@@ -237,6 +252,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.perguntas_frequentes -> {
                 exibirListaPerguntasFrequentes()
             }
+            R.id.lista_ubs_bairros -> {
+                exibirListaUbsBairros()
+            }
         }
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
@@ -245,6 +263,177 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    private fun exibirListaUbsBairros(){
+        val listaUbsBairros = listOf(
+            FaqItem(
+                "A cidade possui diversas UBS, sendo que cada uma delas atende a bairros específicos." +
+                        "\n\nA UBS que lhe atenderá é a que está listada com o nome do bairro onde você mora.\n\n" +
+                        "Confira abaixo a lista e descubra qual UBS atende seu bairro!",
+                ""
+            ),
+            FaqItem(
+                "UBS Vilela, UBS Santa Efigênia, UBS São Pedro, UBS Santo Antônio",
+                "Água Santa \n" +
+                        "Caeté\n" +
+                        "Caminho Novo\n" +
+                        "Guarani\n" +
+                        "Novo Horizonte\n" +
+                        "Santa Efigênia\n" +
+                        "Santo Antônio\n" +
+                        "São Pedro"
+            ),
+            FaqItem(
+                "UBS Vilela e UBS Boa Vista",
+                "Andaraí\n" +
+                        "Boa Vista \n" +
+                        "Caiçaras\n" +
+                        "Chácara das Andorinhas\n" +
+                        "Passarinhos\n" +
+                        "Penha\n" +
+                        "Pontilhão\n" +
+                        "São José\n" +
+                        "Tijuca \n" +
+                        "Vilela"
+            ),
+            FaqItem(
+                "UBS Nova Suíça",
+                "Ipanema\n" +
+                        "Jardim das Alterosas\n" +
+                        "Nova Cidade\n" +
+                        "Nova Suíça"
+            ),
+            FaqItem(
+                "UBS Carmo",
+                "Boa Morte\n" +
+                        "Bom Pastor\n" +
+                        "Campo \n" +
+                        "Carmo\n" +
+                        "Dom Bosco\n" +
+                        "Fátima\n" +
+                        "Jardim\n" +
+                        "Loteamento Ceolin\n" +
+                        "Ponte do Cosme\n" +
+                        "São Geraldo\n" +
+                        "Sapé\n" +
+                        "Serra Verde\n" +
+                        "UBS Funcionários\n" +
+                        "Centro\n" +
+                        "Diniz I\n" +
+                        "Diniz II\n" +
+                        "Floresta\n" +
+                        "Funcionários\n" +
+                        "Mansões \n" +
+                        "Nossa Senhora Aparecida\n" +
+                        "Padre Cunha\n" +
+                        "São Sebastião"
+            ),
+            FaqItem(
+                "UBS Grogotó, UBS João Paulo II, UBS São Francisco, UBS Nove de Março",
+                "Bananal\n" +
+                        "Grogotó \n" +
+                        "Jacó\n" +
+                        "João Paulo II\n" +
+                        "Loteamento Loschi\n" +
+                        "Nove de Março\n" +
+                        "Panorama\n" +
+                        "Rosa Park\n" +
+                        "Santa Luzia\n" +
+                        "Santa Maria\n" +
+                        "São Francisco\n" +
+                        "Serrão\n" +
+                        "Vale das Rosas\n" +
+                        "Vista Alegre"
+            ),
+            FaqItem(
+                "UBS Santa Cecília",
+                "Eucisa\n" +
+                        "Faria\n" +
+                        "Monsenhor Mário Quintão\n" +
+                        "Monte Mário\n" +
+                        "Residencial Savassi\n" +
+                        "Retiro das Rosas\n" +
+                        "Santa Cecília\n" +
+                        "São Cristóvão\n" +
+                        "São Jorge\n" +
+                        "São Vicente de Paulo\n" +
+                        "Valentin Prenassi"
+            ),
+            FaqItem(
+                "UBS Correia de Almeida, UBS Torres",
+                "Campestre II\n" +
+                        "Correia de Almeida\n" +
+                        "Costas\n" +
+                        "Galego\n" +
+                        "Mantiqueira\n" +
+                        "Palmital\n" +
+                        "Quinta das Mantiqueiras\n" +
+                        "Torres"
+            ),
+            FaqItem(
+                "UBS Senhora das Dores, UBS Pinheiro Grosso",
+                "Margaridas\n" +
+                        "Pinheiro Grosso\n" +
+                        "Senhora das Dores"
+            ),
+            FaqItem(
+                "UBS Padre Brito",
+                "Padre Brito"
+            ),
+            FaqItem(
+                "UBS Guido Roman",
+                "Belvedere\n" +
+                        "Guido Roman\n" +
+                        "Santa Tereza I\n" +
+                        "Santa Tereza II"
+            ),
+        )
+        val scrollView = ScrollView(this)
+        scrollView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(20, 20, 20, 20)
+
+        val marginInDp = 15
+
+        for ((index, listaUbsBairro) in listaUbsBairros.withIndex()) {
+            val perguntaTextView = TextView(this)
+            perguntaTextView.text = listaUbsBairro.pergunta
+            perguntaTextView.textSize = 18f
+            linearLayout.addView(perguntaTextView)
+
+            val respostaTextView = TextView(this)
+            respostaTextView.text = listaUbsBairro.resposta
+            respostaTextView.textSize = 14f
+            respostaTextView.setTextColor(resources.getColor(android.R.color.darker_gray))
+            respostaTextView.setPadding(0, 0, 0, 20)
+            linearLayout.addView(respostaTextView)
+
+            if (index < listaUbsBairros.size - 1) {
+                val separator = View(this)
+                val separatorLayoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    1
+                )
+                separatorLayoutParams.setMargins(0, marginInDp, 0, marginInDp)
+                separator.layoutParams = separatorLayoutParams
+                separator.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
+                linearLayout.addView(separator)
+            }
+        }
+        scrollView.addView(linearLayout)
+
+        val builder = AlertDialog.Builder(this)
+//        builder.setTitle("Confira a UBS mais próxima de você")
+        builder.setView(scrollView)
+        builder.setPositiveButton("Fechar", null)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
     private fun exibirListaPerguntasFrequentes() {
         val faqItems = listOf(
             FaqItem(

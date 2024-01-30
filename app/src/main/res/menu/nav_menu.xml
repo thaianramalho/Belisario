@@ -3,4 +3,7 @@
     <item
         android:id="@+id/perguntas_frequentes"
         android:title="Perguntas frequentes"/>
+    <item
+        android:id="@+id/lista_ubs_bairros"
+        android:title="Lista de UBS e Bairros"/>
 </menu>

@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="border_color">#FF000000</color>
     <color name="blue_belisario">#73CBE8</color>
+    <color name="green_search">#439725</color>
+    <color name="red_search">#972525</color>
 </resources>
