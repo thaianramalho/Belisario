@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Gravity
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -21,12 +22,15 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -37,6 +41,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
@@ -45,12 +51,6 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONArray
 import java.io.IOException
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import android.view.MenuItem
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import com.google.android.material.navigation.NavigationView
 
 data class LocalizacaoApi(val nome: String, val latlng: String)
 
@@ -95,8 +95,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val locInicial = LatLng(-21.22332575411119, -43.77215283547053)
         val zoomLevel = 13f
 
-        val inputsLayout =
-            findViewById<ConstraintLayout>(R.id.main)
+        val inputsLayout = findViewById<ConstraintLayout>(R.id.main)
 
         inputsLayout.setOnTouchListener { _, _ ->
             hideKeyboard(autoCompleteTextView)
@@ -227,10 +226,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_faq -> {
+            R.id.perguntas_frequentes -> {
                 exibirListaPerguntasFrequentes()
             }
-            // Adicione mais opções do menu conforme necessário
         }
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
@@ -240,8 +238,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun exibirListaPerguntasFrequentes() {
-        // Implemente a lógica para exibir a lista de perguntas frequentes aqui.
-}
+        val faqItems = listOf(
+            FaqItem(
+                "O que é o SUS?",
+                "O Sistema Único de Saúde (SUS) é um sistema público de saúde no Brasil que oferece serviços de saúde para todos os cidadãos, de forma gratuita."
+            ), FaqItem(
+                "Como posso encontrar unidades de saúde próximas a mim?",
+                "Você pode usar o aplicativo para encontrar unidades de saúde próximas à sua localização atual. Basta digitar seus sintomas e o aplicativo mostrará as unidades mais próximas que podem atendê-lo."
+            ), FaqItem(
+                "Posso agendar consultas pelo aplicativo?",
+                "Não, o aplicativo não oferece a funcionalidade de agendamento de consultas. Ele fornece informações sobre as unidades de saúde e suas localizações."
+            ), FaqItem(
+                "Como posso obter informações sobre sintomas?",
+                "O aplicativo fornece informações sobre sintomas com base em dados fornecidos pela Secretaria de Saúde. Você pode pesquisar sintomas para obter orientações sobre onde buscar atendimento."
+            ), FaqItem(
+                "Existe algum custo para usar o aplicativo?",
+                "Não, o aplicativo é gratuito para todos os usuários. Ele visa fornecer informações e orientações sobre serviços de saúde do SUS."
+            )
+            // Adicione mais perguntas e respostas conforme necessário
+        )
+
+        val layout = LinearLayout(this)
+        layout.orientation = LinearLayout.VERTICAL
+        layout.setPadding(20, 20, 20, 20)
+
+        for (faqItem in faqItems) {
+            val perguntaTextView = TextView(this)
+            perguntaTextView.text = faqItem.pergunta
+            perguntaTextView.textSize = 18f
+            layout.addView(perguntaTextView)
+
+            val respostaTextView = TextView(this)
+            respostaTextView.text = faqItem.resposta
+            respostaTextView.textSize = 14f
+            respostaTextView.setTextColor(resources.getColor(android.R.color.darker_gray))
+            respostaTextView.setPadding(0, 0, 0, 20)
+            layout.addView(respostaTextView)
+        }
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Perguntas Frequentes")
+        builder.setView(layout)
+        builder.setPositiveButton("Fechar", null)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    data class FaqItem(val pergunta: String, val resposta: String)
+
 
     private fun hideKeyboard(view: View) {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -384,8 +429,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                                 textView.setTextColor(
                                     ContextCompat.getColor(
-                                        this@MainActivity,
-                                        android.R.color.darker_gray
+                                        this@MainActivity, android.R.color.darker_gray
                                     )
                                 )
 
