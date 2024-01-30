@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/perguntas_frequentes"
-        android:title="Perguntas frequentes"/>
+        android:title="Perguntas frequentes"
+        style="@style/MenuItem"/>
+
     <item
         android:id="@+id/lista_ubs_bairros"
-        android:title="Lista de UBS e Bairros"/>
+        android:title="Lista de UBS e Bairros"
+        style="@style/MenuItem"/>
+
+    <item
+        android:id="@+id/sobre"
+        android:title="Sobre o Belisário"
+        style="@style/MenuItem"/>
 </menu>

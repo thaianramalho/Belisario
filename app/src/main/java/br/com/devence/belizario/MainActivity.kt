@@ -35,8 +35,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.marginTop
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -72,16 +70,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     val filter = object : InputFilter {
         override fun filter(
-            source: CharSequence?,
-            start: Int,
-            end: Int,
-            dest: Spanned?,
-            dstart: Int,
-            dend: Int
+            source: CharSequence?, start: Int, end: Int, dest: Spanned?, dstart: Int, dend: Int
         ): CharSequence? {
             return source?.toString()?.replace("\n", "")
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -103,10 +97,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
 
 
-        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             obterLocalizacaoAtual()
         } else {
-            requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
         }
 
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.inputBusca)
@@ -252,8 +246,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.perguntas_frequentes -> {
                 exibirListaPerguntasFrequentes()
             }
+
             R.id.lista_ubs_bairros -> {
                 exibirListaUbsBairros()
+            }
+            R.id.sobre -> {
+                sobreBelisario()
             }
         }
 
@@ -263,134 +261,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun exibirListaUbsBairros(){
+    private fun exibirListaUbsBairros() {
         val listaUbsBairros = listOf(
             FaqItem(
-                "A cidade possui diversas UBS, sendo que cada uma delas atende a bairros específicos." +
-                        "\n\nA UBS que lhe atenderá é a que está listada com o nome do bairro onde você mora.\n\n" +
-                        "Confira abaixo a lista e descubra qual UBS atende seu bairro!",
+                "A cidade possui diversas UBS, sendo que cada uma delas atende a bairros específicos." + "\n\nA UBS que lhe atenderá é a que está listada com o nome do bairro onde você mora.\n\n" + "Confira abaixo a lista e descubra qual UBS atende seu bairro!",
                 ""
             ),
             FaqItem(
                 "UBS Vilela, UBS Santa Efigênia, UBS São Pedro, UBS Santo Antônio",
-                "Água Santa \n" +
-                        "Caeté\n" +
-                        "Caminho Novo\n" +
-                        "Guarani\n" +
-                        "Novo Horizonte\n" +
-                        "Santa Efigênia\n" +
-                        "Santo Antônio\n" +
-                        "São Pedro"
+                "Água Santa \n" + "Caeté\n" + "Caminho Novo\n" + "Guarani\n" + "Novo Horizonte\n" + "Santa Efigênia\n" + "Santo Antônio\n" + "São Pedro"
             ),
             FaqItem(
                 "UBS Vilela e UBS Boa Vista",
-                "Andaraí\n" +
-                        "Boa Vista \n" +
-                        "Caiçaras\n" +
-                        "Chácara das Andorinhas\n" +
-                        "Passarinhos\n" +
-                        "Penha\n" +
-                        "Pontilhão\n" +
-                        "São José\n" +
-                        "Tijuca \n" +
-                        "Vilela"
+                "Andaraí\n" + "Boa Vista \n" + "Caiçaras\n" + "Chácara das Andorinhas\n" + "Passarinhos\n" + "Penha\n" + "Pontilhão\n" + "São José\n" + "Tijuca \n" + "Vilela"
             ),
             FaqItem(
                 "UBS Nova Suíça",
-                "Ipanema\n" +
-                        "Jardim das Alterosas\n" +
-                        "Nova Cidade\n" +
-                        "Nova Suíça"
+                "Ipanema\n" + "Jardim das Alterosas\n" + "Nova Cidade\n" + "Nova Suíça"
             ),
             FaqItem(
                 "UBS Carmo",
-                "Boa Morte\n" +
-                        "Bom Pastor\n" +
-                        "Campo \n" +
-                        "Carmo\n" +
-                        "Dom Bosco\n" +
-                        "Fátima\n" +
-                        "Jardim\n" +
-                        "Loteamento Ceolin\n" +
-                        "Ponte do Cosme\n" +
-                        "São Geraldo\n" +
-                        "Sapé\n" +
-                        "Serra Verde\n" +
-                        "UBS Funcionários\n" +
-                        "Centro\n" +
-                        "Diniz I\n" +
-                        "Diniz II\n" +
-                        "Floresta\n" +
-                        "Funcionários\n" +
-                        "Mansões \n" +
-                        "Nossa Senhora Aparecida\n" +
-                        "Padre Cunha\n" +
-                        "São Sebastião"
+                "Boa Morte\n" + "Bom Pastor\n" + "Campo \n" + "Carmo\n" + "Dom Bosco\n" + "Fátima\n" + "Jardim\n" + "Loteamento Ceolin\n" + "Ponte do Cosme\n" + "São Geraldo\n" + "Sapé\n" + "Serra Verde\n" + "UBS Funcionários\n" + "Centro\n" + "Diniz I\n" + "Diniz II\n" + "Floresta\n" + "Funcionários\n" + "Mansões \n" + "Nossa Senhora Aparecida\n" + "Padre Cunha\n" + "São Sebastião"
             ),
             FaqItem(
                 "UBS Grogotó, UBS João Paulo II, UBS São Francisco, UBS Nove de Março",
-                "Bananal\n" +
-                        "Grogotó \n" +
-                        "Jacó\n" +
-                        "João Paulo II\n" +
-                        "Loteamento Loschi\n" +
-                        "Nove de Março\n" +
-                        "Panorama\n" +
-                        "Rosa Park\n" +
-                        "Santa Luzia\n" +
-                        "Santa Maria\n" +
-                        "São Francisco\n" +
-                        "Serrão\n" +
-                        "Vale das Rosas\n" +
-                        "Vista Alegre"
+                "Bananal\n" + "Grogotó \n" + "Jacó\n" + "João Paulo II\n" + "Loteamento Loschi\n" + "Nove de Março\n" + "Panorama\n" + "Rosa Park\n" + "Santa Luzia\n" + "Santa Maria\n" + "São Francisco\n" + "Serrão\n" + "Vale das Rosas\n" + "Vista Alegre"
             ),
             FaqItem(
                 "UBS Santa Cecília",
-                "Eucisa\n" +
-                        "Faria\n" +
-                        "Monsenhor Mário Quintão\n" +
-                        "Monte Mário\n" +
-                        "Residencial Savassi\n" +
-                        "Retiro das Rosas\n" +
-                        "Santa Cecília\n" +
-                        "São Cristóvão\n" +
-                        "São Jorge\n" +
-                        "São Vicente de Paulo\n" +
-                        "Valentin Prenassi"
+                "Eucisa\n" + "Faria\n" + "Monsenhor Mário Quintão\n" + "Monte Mário\n" + "Residencial Savassi\n" + "Retiro das Rosas\n" + "Santa Cecília\n" + "São Cristóvão\n" + "São Jorge\n" + "São Vicente de Paulo\n" + "Valentin Prenassi"
             ),
             FaqItem(
                 "UBS Correia de Almeida, UBS Torres",
-                "Campestre II\n" +
-                        "Correia de Almeida\n" +
-                        "Costas\n" +
-                        "Galego\n" +
-                        "Mantiqueira\n" +
-                        "Palmital\n" +
-                        "Quinta das Mantiqueiras\n" +
-                        "Torres"
+                "Campestre II\n" + "Correia de Almeida\n" + "Costas\n" + "Galego\n" + "Mantiqueira\n" + "Palmital\n" + "Quinta das Mantiqueiras\n" + "Torres"
             ),
             FaqItem(
                 "UBS Senhora das Dores, UBS Pinheiro Grosso",
-                "Margaridas\n" +
-                        "Pinheiro Grosso\n" +
-                        "Senhora das Dores"
+                "Margaridas\n" + "Pinheiro Grosso\n" + "Senhora das Dores"
             ),
             FaqItem(
-                "UBS Padre Brito",
-                "Padre Brito"
+                "UBS Padre Brito", "Padre Brito"
             ),
             FaqItem(
                 "UBS Guido Roman",
-                "Belvedere\n" +
-                        "Guido Roman\n" +
-                        "Santa Tereza I\n" +
-                        "Santa Tereza II"
+                "Belvedere\n" + "Guido Roman\n" + "Santa Tereza I\n" + "Santa Tereza II"
             ),
         )
         val scrollView = ScrollView(this)
         scrollView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
 
         val linearLayout = LinearLayout(this)
@@ -415,8 +334,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (index < listaUbsBairros.size - 1) {
                 val separator = View(this)
                 val separatorLayoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    1
+                    ViewGroup.LayoutParams.MATCH_PARENT, 1
                 )
                 separatorLayoutParams.setMargins(0, marginInDp, 0, marginInDp)
                 separator.layoutParams = separatorLayoutParams
@@ -434,6 +352,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val dialog = builder.create()
         dialog.show()
     }
+
     private fun exibirListaPerguntasFrequentes() {
         val faqItems = listOf(
             FaqItem(
@@ -457,8 +376,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val scrollView = ScrollView(this)
         scrollView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
         )
 
         val linearLayout = LinearLayout(this)
@@ -483,8 +401,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (index < faqItems.size - 1) {
                 val separator = View(this)
                 val separatorLayoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    1 // Altura da linha de separação em dp
+                    ViewGroup.LayoutParams.MATCH_PARENT, 1 // Altura da linha de separação em dp
                 )
                 separatorLayoutParams.setMargins(0, marginInDp, 0, marginInDp)
                 separator.layoutParams = separatorLayoutParams
@@ -497,6 +414,77 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Perguntas Frequentes")
+        builder.setView(scrollView)
+        builder.setPositiveButton("Fechar", null)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun sobreBelisario() {
+        val faqItems = listOf(
+            FaqItem(
+                "O Belisário é um produto desenvolvido pelo Grupo de Pesquisas Aplicadas em Tecnologia e Comunicação, do Unipac Barbacena.",
+                ""
+            ), FaqItem(
+                "Pesquisadores Bolsistas",
+                "Erton Rocha Gomes Pereira, Lara Wiermann Chaves de Oliveira, Isabella Cristina Campos Ferreira, Matheus Felipe Bomtempo de Albuquerque, Thaian Gabriel Antonio Ramalho."
+            ), FaqItem(
+                "Pesquisadoras Voluntárias", "Dyrlenne Maria Araújo Dias, Giuliana Facco Machado."
+            ), FaqItem(
+                "Apoio na listagem de sintomas", "Dr. Lucas de Oliveira Cantaruti Guida."
+            ), FaqItem(
+                "Orientador", "Prof. Dr. Ricardo Matos de Araújo Rios."
+            ), FaqItem(
+                "Dados do app fornecidos por", "SESAP/PMB."
+            ), FaqItem(
+                "Contato", "ricardorios@unipac.br"
+            ), FaqItem(
+                "Por que Belisário?", "O nome Belisário é uma homenagem ao médico sanitarista Belisário Pena (1868-1939). Natural de Barbacena (MG), Belisário Pena foi um dos principais sanitaristas da história do Brasil, tendo trabalhado com Oswaldo Cruz. Seu papel na comunicação em saúde foi fundamental para o êxito de campanhas de vacinação e em saúde no século 20."
+            )
+            // Adicione mais perguntas e respostas conforme necessário
+        )
+
+        val scrollView = ScrollView(this)
+        scrollView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+        )
+
+        val linearLayout = LinearLayout(this)
+        linearLayout.orientation = LinearLayout.VERTICAL
+        linearLayout.setPadding(20, 20, 20, 20)
+
+        val marginInDp = 15
+
+        for ((index, faqItem) in faqItems.withIndex()) {
+            val perguntaTextView = TextView(this)
+            perguntaTextView.text = faqItem.pergunta
+            perguntaTextView.textSize = 18f
+            linearLayout.addView(perguntaTextView)
+
+            val respostaTextView = TextView(this)
+            respostaTextView.text = faqItem.resposta
+            respostaTextView.textSize = 14f
+            respostaTextView.setTextColor(resources.getColor(android.R.color.darker_gray))
+            respostaTextView.setPadding(0, 0, 0, 20)
+            linearLayout.addView(respostaTextView)
+
+            if (index < faqItems.size - 1) {
+                val separator = View(this)
+                val separatorLayoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, 1 // Altura da linha de separação em dp
+                )
+                separatorLayoutParams.setMargins(0, marginInDp, 0, marginInDp)
+                separator.layoutParams = separatorLayoutParams
+                separator.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
+                linearLayout.addView(separator)
+            }
+        }
+
+        scrollView.addView(linearLayout)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Sobre o Belisário")
         builder.setView(scrollView)
         builder.setPositiveButton("Fechar", null)
 
@@ -578,7 +566,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun tamanhoLayoutBusca(tamanho:Int){
+    private fun tamanhoLayoutBusca(tamanho: Int) {
         val bgMenuSearch = findViewById<ImageView>(R.id.bgMenuSearch)
         val layoutParams = bgMenuSearch.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.bottomMargin = tamanho
@@ -627,7 +615,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             layout.removeAllViews()
 
                             for (marker in markerList) {
-                                marker?.remove()
+                                marker.remove()
                             }
                             markerList.clear()
 
@@ -755,7 +743,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun limparTudo() {
 
         for (marker in markerList) {
-            marker?.remove()
+            marker.remove()
         }
         markerList.clear()
 
