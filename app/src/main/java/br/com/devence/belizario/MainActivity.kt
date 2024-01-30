@@ -45,11 +45,16 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONArray
 import java.io.IOException
-
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 
 data class LocalizacaoApi(val nome: String, val latlng: String)
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     lateinit var mapFragment: SupportMapFragment
     lateinit var googleMap: GoogleMap
@@ -61,6 +66,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+        val navView: NavigationView = findViewById(R.id.navigationView)
+
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        navView.setNavigationItemSelectedListener(this)
+
 
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             obterLocalizacaoAtual()
@@ -76,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         val zoomLevel = 13f
 
         val inputsLayout =
-            findViewById<ConstraintLayout>(R.id.main) // Troque para o ID do seu ConstraintLayout principal
+            findViewById<ConstraintLayout>(R.id.main)
 
         inputsLayout.setOnTouchListener { _, _ ->
             hideKeyboard(autoCompleteTextView)
@@ -186,7 +206,42 @@ class MainActivity : AppCompatActivity() {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locInicial, zoomLevel))
         })
 
+        val faqButton = findViewById<FloatingActionButton>(R.id.sidebarButton)
+
+        faqButton.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
+
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+                drawerLayout.openDrawer(GravityCompat.START)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_faq -> {
+                exibirListaPerguntasFrequentes()
+            }
+            // Adicione mais opções do menu conforme necessário
+        }
+
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+        drawerLayout.closeDrawer(GravityCompat.START)
+
+        return true
+    }
+
+    private fun exibirListaPerguntasFrequentes() {
+        // Implemente a lógica para exibir a lista de perguntas frequentes aqui.
+}
 
     private fun hideKeyboard(view: View) {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -221,7 +276,7 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             } else {
-                exibirMensagemErro("Não foi possível obter a localização.")
+                exibirMensagemErro("Não foi possível obter a sua localização. Ative a localização do dispositivo e tente novamente.")
 
             }
         }.addOnFailureListener { e ->

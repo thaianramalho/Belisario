@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name" translatable="false">Belisario</string>
+    <string name="navigation_drawer_open">Abrir navegação</string>
+    <string name="navigation_drawer_close">Fechar navegação</string>
 </resources>
