@@ -178,9 +178,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         confirmBusca.setOnClickListener {
             val textoBusca = inputBusca.text.toString()
-            tamanhoLayoutBusca(0)
 
             if (textoBusca.isNotEmpty()) {
+                tamanhoLayoutBusca(0)
                 markerMaisProximo = null
                 distanciaMaisProxima = Float.MAX_VALUE
 
