@@ -622,6 +622,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             val layout = findViewById<LinearLayout>(R.id.layoutPrincipal)
                             layout.removeAllViews()
 
+                            // Remover os marcadores existentes
                             for (marker in markerList) {
                                 marker.remove()
                             }
@@ -631,8 +632,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             listaLocais?.text = ""
                             listaLocais?.visibility = View.VISIBLE
 
+                            // Ordenar localizações pela distância
+                            val localizacoesOrdenadas = localizacoesApi.sortedBy { localizacao ->
+                                val latLngArray = localizacao.latlng.split(", ")
+                                val latitude = latLngArray[0].toDouble()
+                                val longitude = latLngArray[1].toDouble()
+                                calcularDistancia(userLocation, LatLng(latitude, longitude))
+                            }
 
-                            localizacoesApi.forEach { localizacao ->
+                            localizacoesOrdenadas.forEach { localizacao ->
                                 val textView = TextView(this@MainActivity)
                                 val params = LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -661,7 +669,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 textView.gravity = Gravity.CENTER
 
                                 textView.setOnClickListener {
-                                    val latLngArray = localizacao.latlng.split(",")
+                                    val latLngArray = localizacao.latlng.split(", ")
                                     if (latLngArray.size == 2) {
                                         val latitude = latLngArray[0].toDouble()
                                         val longitude = latLngArray[1].toDouble()
@@ -675,32 +683,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     }
                                 }
 
-                                val layout = findViewById<LinearLayout>(R.id.layoutPrincipal)
                                 layout.addView(textView)
-                            }
 
-                            localizacoesApi.forEach { localizacao ->
-                                val latLngArray = localizacao.latlng.split(",")
+                                // Adicionar marcador no mapa
+                                val latLngArray = localizacao.latlng.split(", ")
                                 if (latLngArray.size == 2) {
                                     val latitude = latLngArray[0].toDouble()
                                     val longitude = latLngArray[1].toDouble()
                                     val locAtendimento = LatLng(latitude, longitude)
-
-                                    val distancia = calcularDistancia(userLocation, locAtendimento)
-
                                     val marker = googleMap.addMarker(
                                         MarkerOptions().position(locAtendimento)
                                             .title(localizacao.nome)
                                     )
-
                                     marker?.tag = localizacao
 
                                     googleMap.setOnInfoWindowClickListener { clickedMarker ->
-                                        val localizacaoClicada =
-                                            clickedMarker.tag as? LocalizacaoApi
+                                        val localizacaoClicada = clickedMarker.tag as? LocalizacaoApi
 
                                         if (localizacaoClicada != null) {
-                                            val latLngArray = localizacaoClicada.latlng.split(",")
+                                            val latLngArray = localizacaoClicada.latlng.split(", ")
                                             if (latLngArray.size == 2) {
                                                 val latitude = latLngArray[0].toDouble()
                                                 val longitude = latLngArray[1].toDouble()
@@ -721,6 +722,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 }
                             }
 
+                            // Ajustar a câmera para focar no marcador mais próximo
                             val markerMaisProximo = markerList.minByOrNull { marker ->
                                 calcularDistancia(userLocation, marker.position)
                             }
@@ -733,9 +735,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     )
                                 )
                             }
-
-
                         }
+
                     }
                 }
             }
