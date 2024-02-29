@@ -96,9 +96,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:completionThreshold="0"
+                    android:dropDownHeight="240dp"
                     android:dropDownAnchor="@+id/inputBusca"
-                    android:dropDownHeight="wrap_content"
-                    android:dropDownVerticalOffset="-15dp"
                     android:elevation="2dp"
                     android:hint="Digite um sintoma"
                     android:padding="10dp"
@@ -106,6 +106,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     tools:ignore="TouchTargetSizeCheck" />
+
 
 
             </com.google.android.material.textfield.TextInputLayout>

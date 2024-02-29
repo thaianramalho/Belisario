@@ -56,6 +56,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONArray
 import java.io.IOException
+import kotlin.math.pow
 
 data class LocalizacaoApi(val nome: String, val latlng: String)
 
@@ -173,6 +174,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                         if (count == 0) {
                                             autoCompleteTextView.dismissDropDown()
                                         } else {
+                                            val itemHeightPixels = resources.getDimensionPixelSize(R.dimen.dropdown_item_height)
+                                            val maxDropdownHeightPixels = resources.getDimensionPixelSize(R.dimen.max_dropdown_height)
+                                            val dropdownHeight = if (count * itemHeightPixels > maxDropdownHeightPixels)
+                                                maxDropdownHeightPixels
+                                            else
+                                                count * itemHeightPixels
+                                            autoCompleteTextView.dropDownHeight = dropdownHeight
                                             autoCompleteTextView.showDropDown()
                                         }
                                     }
@@ -671,11 +679,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 layout.addView(textView)
                             }
 
-
-
-
-
-
                             localizacoesApi.forEach { localizacao ->
                                 val latLngArray = localizacao.latlng.split(",")
                                 if (latLngArray.size == 2) {
@@ -684,11 +687,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     val locAtendimento = LatLng(latitude, longitude)
 
                                     val distancia = calcularDistancia(userLocation, locAtendimento)
-
-                                    if (markerMaisProximo == null || distancia < distanciaMaisProxima) {
-                                        markerMaisProximo = locAtendimento
-                                        distanciaMaisProxima = distancia
-                                    }
 
                                     val marker = googleMap.addMarker(
                                         MarkerOptions().position(locAtendimento)
@@ -715,7 +713,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                         }
                                     }
 
-
                                     if (marker != null) {
                                         markerList.add(marker)
                                     } else {
@@ -724,14 +721,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 }
                             }
 
+                            val markerMaisProximo = markerList.minByOrNull { marker ->
+                                calcularDistancia(userLocation, marker.position)
+                            }
+
                             markerMaisProximo?.let {
                                 val zoomLevel = 16f
                                 googleMap.animateCamera(
                                     CameraUpdateFactory.newLatLngZoom(
-                                        it, zoomLevel
+                                        it.position, zoomLevel
                                     )
                                 )
                             }
+
 
                         }
                     }
@@ -739,6 +741,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
     }
+
 
     private fun limparTudo() {
 
@@ -751,17 +754,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         layout.removeAllViews()
     }
 
-    private fun calcularDistancia(location1: LatLng, location2: LatLng): Float {
-        val results = FloatArray(1)
-        Location.distanceBetween(
-            location1.latitude,
-            location1.longitude,
-            location2.latitude,
-            location2.longitude,
-            results
-        )
-        return results[0]
+    private fun calcularDistancia(userLocation: LatLng, locAtendimento: LatLng): Double {
+        val lat1 = Math.toRadians(userLocation.latitude)
+        val lon1 = Math.toRadians(userLocation.longitude)
+        val lat2 = Math.toRadians(locAtendimento.latitude)
+        val lon2 = Math.toRadians(locAtendimento.longitude)
+
+        val dLon = lon2 - lon1
+        val dLat = lat2 - lat1
+
+        val a = Math.sin(dLat / 2).pow(2.0) + (Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2).pow(2.0))
+        val c = 2 * Math.asin(Math.sqrt(a))
+        val earthRadius = 6371.0 // Raio médio da Terra em quilômetros
+        return earthRadius * c
     }
+
 
     private fun showErrorDialog(context: Context) {
         runOnUiThread {
