@@ -296,7 +296,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ),
             FaqItem(
                 "UBS Carmo",
-                "Boa Morte\n" + "Bom Pastor\n" + "Campo \n" + "Carmo\n" + "Dom Bosco\n" + "Fátima\n" + "Jardim\n" + "Loteamento Ceolin\n" + "Ponte do Cosme\n" + "São Geraldo\n" + "Sapé\n" + "Serra Verde\n" + "UBS Funcionários\n" + "Centro\n" + "Diniz I\n" + "Diniz II\n" + "Floresta\n" + "Funcionários\n" + "Mansões \n" + "Nossa Senhora Aparecida\n" + "Padre Cunha\n" + "São Sebastião"
+                "Boa Morte\n" + "Bom Pastor\n" + "Campo \n" + "Carmo\n" + "Dom Bosco\n" + "Fátima\n" + "Jardim\n" + "Loteamento Ceolin\n" + "Ponte do Cosme\n" + "São Geraldo\n" + "Sapé\n" + "Serra Verde\n"
+            ),
+            FaqItem(
+                "UBS Funcionários",
+                "Centro\n" + "Diniz I\n" + "Diniz II\n" + "Floresta\n" + "Funcionários\n" + "Mansões \n" + "Nossa Senhora Aparecida\n" + "Padre Cunha\n" + "São Sebastião"
             ),
             FaqItem(
                 "UBS Grogotó, UBS João Paulo II, UBS São Francisco, UBS Nove de Março",
