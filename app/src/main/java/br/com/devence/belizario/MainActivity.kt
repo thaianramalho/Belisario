@@ -70,7 +70,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var locAtualUsuario: LatLng? = null
 
 
-
     val filter = object : InputFilter {
         override fun filter(
             source: CharSequence?, start: Int, end: Int, dest: Spanned?, dstart: Int, dend: Int
@@ -175,12 +174,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                         if (count == 0) {
                                             autoCompleteTextView.dismissDropDown()
                                         } else {
-                                            val itemHeightPixels = resources.getDimensionPixelSize(R.dimen.dropdown_item_height)
-                                            val maxDropdownHeightPixels = resources.getDimensionPixelSize(R.dimen.max_dropdown_height)
-                                            val dropdownHeight = if (count * itemHeightPixels > maxDropdownHeightPixels)
-                                                maxDropdownHeightPixels
-                                            else
-                                                count * itemHeightPixels
+                                            val itemHeightPixels =
+                                                resources.getDimensionPixelSize(R.dimen.dropdown_item_height)
+                                            val maxDropdownHeightPixels =
+                                                resources.getDimensionPixelSize(R.dimen.max_dropdown_height)
+                                            val dropdownHeight =
+                                                if (count * itemHeightPixels > maxDropdownHeightPixels) maxDropdownHeightPixels
+                                                else count * itemHeightPixels
                                             autoCompleteTextView.dropDownHeight = dropdownHeight
                                             autoCompleteTextView.showDropDown()
                                         }
@@ -212,13 +212,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 locAtualUsuario?.let {
                     runOnUiThread(this@MainActivity, textoBusca, it)
                 } ?: run {
-                    Toast.makeText(this@MainActivity, "Localização atual não disponível.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity, "Localização atual não disponível.", Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
             } else {
-                Toast.makeText(this@MainActivity, "Digite algum sintoma para realizar a busca.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@MainActivity,
+                    "Digite algum sintoma para realizar a busca.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -257,6 +263,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.lista_ubs_bairros -> {
                 exibirListaUbsBairros()
             }
+
             R.id.sobre -> {
                 sobreBelisario()
             }
@@ -378,7 +385,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 "Existe algum custo para usar o aplicativo?",
                 "Não, o aplicativo é gratuito para todos os usuários. Ele visa fornecer informações e orientações sobre serviços de saúde do SUS."
             )
-            // Adicione mais perguntas e respostas conforme necessário
         )
 
         val scrollView = ScrollView(this)
@@ -447,9 +453,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ), FaqItem(
                 "Contato", "ricardorios@unipac.br"
             ), FaqItem(
-                "Por que Belisário?", "O nome Belisário é uma homenagem ao médico sanitarista Belisário Pena (1868-1939). Natural de Barbacena (MG), Belisário Pena foi um dos principais sanitaristas da história do Brasil, tendo trabalhado com Oswaldo Cruz. Seu papel na comunicação em saúde foi fundamental para o êxito de campanhas de vacinação e em saúde no século 20."
+                "Por que Belisário?",
+                "O nome Belisário é uma homenagem ao médico sanitarista Belisário Pena (1868-1939). Natural de Barbacena (MG), Belisário Pena foi um dos principais sanitaristas da história do Brasil, tendo trabalhado com Oswaldo Cruz. Seu papel na comunicação em saúde foi fundamental para o êxito de campanhas de vacinação e em saúde no século 20."
             )
-            // Adicione mais perguntas e respostas conforme necessário
         )
 
         val scrollView = ScrollView(this)
@@ -479,7 +485,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (index < faqItems.size - 1) {
                 val separator = View(this)
                 val separatorLayoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 1 // Altura da linha de separação em dp
+                    ViewGroup.LayoutParams.MATCH_PARENT, 1
                 )
                 separatorLayoutParams.setMargins(0, marginInDp, 0, marginInDp)
                 separator.layoutParams = separatorLayoutParams
@@ -521,7 +527,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             location?.let {
                 locAtualUsuario = LatLng(it.latitude, it.longitude)
-                googleMap.addMarker(MarkerOptions().position(locAtualUsuario!!).title("Sua Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+                googleMap.addMarker(
+                    MarkerOptions().position(locAtualUsuario!!).title("Sua Localização")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                )
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locAtualUsuario!!, 14f))
             } ?: run {
                 exibirMensagemErro("Não foi possível obter a sua localização. Ative a localização do dispositivo e tente novamente.")
@@ -545,11 +554,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permissão concedida, obter a localização atual
                 obterLocalizacaoAtual()
             } else {
-                // Permissão negada, tratar conforme necessário
-                // Por exemplo, exibir uma mensagem ao usuário
+                Toast.makeText(
+                    this,
+                    "Permissão para acessar a localização foi negada. Não é possível obter a localização atual.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -610,7 +621,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             val layout = findViewById<LinearLayout>(R.id.layoutPrincipal)
                             layout.removeAllViews()
 
-                            // Remover os marcadores existentes
                             for (marker in markerList) {
                                 marker.remove()
                             }
@@ -620,7 +630,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             listaLocais?.text = ""
                             listaLocais?.visibility = View.VISIBLE
 
-                            // Ordenar localizações pela distância
                             val localizacoesOrdenadas = localizacoesApi.sortedBy { localizacao ->
                                 val latLngArray = localizacao.latlng.split(", ")
                                 val latitude = latLngArray[0].toDouble()
@@ -646,11 +655,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 params.setMargins(0, 16, 0, 0)
                                 textView.layoutParams = params
 
-                                val text = "<br/><b>${localizacao.nome}</b><br/>Distância: $distanciaFormatada km"
-                                textView.text = HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                                val text =
+                                    "<br/><b>${localizacao.nome}</b><br/>Distância: $distanciaFormatada km"
+                                textView.text =
+                                    HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_COMPACT)
 
                                 textView.setBackgroundResource(R.drawable.rounded_background)
-                                textView.setTextColor(ContextCompat.getColor(this@MainActivity, android.R.color.darker_gray))
+                                textView.setTextColor(
+                                    ContextCompat.getColor(
+                                        this@MainActivity, android.R.color.darker_gray
+                                    )
+                                )
                                 textView.textSize = 16f
                                 textView.setPadding(10, 10, 10, 10)
                                 textView.gravity = Gravity.CENTER
@@ -672,7 +687,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                                 layout.addView(textView)
 
-                                // Adicionar marcador no mapa
+                                // adicionar marcador no mapa
                                 val latLngArray = localizacao.latlng.split(", ")
                                 if (latLngArray.size == 2) {
                                     val latitude = latLngArray[0].toDouble()
@@ -685,7 +700,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     marker?.tag = localizacao
 
                                     googleMap.setOnInfoWindowClickListener { clickedMarker ->
-                                        val localizacaoClicada = clickedMarker.tag as? LocalizacaoApi
+                                        val localizacaoClicada =
+                                            clickedMarker.tag as? LocalizacaoApi
 
                                         if (localizacaoClicada != null) {
                                             val latLngArray = localizacaoClicada.latlng.split(", ")
@@ -751,7 +767,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val dLon = lon2 - lon1
         val dLat = lat2 - lat1
 
-        val a = Math.sin(dLat / 2).pow(2.0) + (Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2).pow(2.0))
+        val a = Math.sin(dLat / 2).pow(2.0) + (Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2)
+            .pow(2.0))
         val c = 2 * Math.asin(Math.sqrt(a))
         val earthRadius = 6371.0 // Raio médio da Terra em quilômetros
         return earthRadius * c
