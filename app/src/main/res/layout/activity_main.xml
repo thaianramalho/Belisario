@@ -99,10 +99,9 @@
                     android:completionThreshold="0"
                     android:dropDownHeight="240dp"
                     android:dropDownAnchor="@+id/inputBusca"
-                    android:elevation="2dp"
                     android:hint="Digite um sintoma"
+                    android:fontFamily="@font/montserrat"
                     android:padding="10dp"
-                    android:shadowRadius="5"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -189,8 +188,9 @@
                     android:id="@+id/listaLocais"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/circular"
-                    android:padding="5dp"
+                    android:fontFamily="@font/montserrat"
+                    android:paddingHorizontal="5dp"
+                    android:paddingVertical="16dp"
                     android:textAlignment="center"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />

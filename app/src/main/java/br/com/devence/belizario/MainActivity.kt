@@ -106,6 +106,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         val autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.inputBusca)
+        autoCompleteTextView.setDropDownBackgroundResource(R.drawable.dropdown_background)
         val inputBusca = findViewById<EditText>(R.id.inputBusca)
         val confirmBusca = findViewById<ImageButton>(R.id.confirmBusca)
         val limparInputBusca = findViewById<ImageButton>(R.id.limparInput)
@@ -145,7 +146,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     runOnUiThread {
                         val adapter = ArrayAdapter(
                             this@MainActivity,
-                            android.R.layout.simple_dropdown_item_1line,
+                            R.layout.dropdown_item,
                             suggestions
                         )
                         autoCompleteTextView.setAdapter(adapter)
@@ -652,11 +653,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                     LinearLayout.LayoutParams.MATCH_PARENT,
                                     LinearLayout.LayoutParams.WRAP_CONTENT
                                 )
-                                params.setMargins(0, 16, 0, 0)
+                                params.setMargins(0, 12, 0, 12)
                                 textView.layoutParams = params
 
                                 val text =
-                                    "<br/><b>${localizacao.nome}</b><br/>Distância: $distanciaFormatada km"
+                                    "<b>${localizacao.nome}</b><br/>Distância: $distanciaFormatada km"
                                 textView.text =
                                     HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_COMPACT)
 
