@@ -520,9 +520,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             location?.let {
-//                locAtualUsuario = LatLng(it.latitude, it.longitude)
-                locAtualUsuario = LatLng(-21.215897190938623, -43.78410891036684)
-                googleMap.addMarker(MarkerOptions().position(locAtualUsuario!!).title("Sua Localização"))
+                locAtualUsuario = LatLng(it.latitude, it.longitude)
+                googleMap.addMarker(MarkerOptions().position(locAtualUsuario!!).title("Sua Localização").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locAtualUsuario!!, 14f))
             } ?: run {
                 exibirMensagemErro("Não foi possível obter a sua localização. Ative a localização do dispositivo e tente novamente.")
@@ -630,6 +629,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             }
 
                             localizacoesOrdenadas.forEach { localizacao ->
+                                val latLngArrayDistancia = localizacao.latlng.split(", ")
+                                val latitude = latLngArrayDistancia[0].toDouble()
+                                val longitude = latLngArrayDistancia[1].toDouble()
+                                val locAtendimento = LatLng(latitude, longitude)
+
+                                val distancia = calcularDistancia(userLocation, locAtendimento)
+
+                                val distanciaFormatada = String.format("%.2f", distancia)
+
                                 val textView = TextView(this@MainActivity)
                                 val params = LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -638,23 +646,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 params.setMargins(0, 16, 0, 0)
                                 textView.layoutParams = params
 
-                                val text = "<br/><b>${localizacao.nome}</b><br/>"
-                                textView.text = HtmlCompat.fromHtml(
-                                    text, HtmlCompat.FROM_HTML_MODE_COMPACT
-                                )
+                                val text = "<br/><b>${localizacao.nome}</b><br/>Distância: $distanciaFormatada km"
+                                textView.text = HtmlCompat.fromHtml(text, HtmlCompat.FROM_HTML_MODE_COMPACT)
 
                                 textView.setBackgroundResource(R.drawable.rounded_background)
-
-                                textView.setTextColor(
-                                    ContextCompat.getColor(
-                                        this@MainActivity, android.R.color.darker_gray
-                                    )
-                                )
-
+                                textView.setTextColor(ContextCompat.getColor(this@MainActivity, android.R.color.darker_gray))
                                 textView.textSize = 16f
-
                                 textView.setPadding(10, 10, 10, 10)
-
                                 textView.gravity = Gravity.CENTER
 
                                 textView.setOnClickListener {
