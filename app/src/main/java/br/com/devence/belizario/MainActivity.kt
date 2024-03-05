@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val markerList = mutableListOf<Marker>()
     private var markerMaisProximo: LatLng? = null
     private var distanciaMaisProxima: Float = Float.MAX_VALUE
+    private var locAtualUsuario: LatLng? = null
+
 
 
     val filter = object : InputFilter {
@@ -108,7 +110,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val inputBusca = findViewById<EditText>(R.id.inputBusca)
         val confirmBusca = findViewById<ImageButton>(R.id.confirmBusca)
         val limparInputBusca = findViewById<ImageButton>(R.id.limparInput)
-        val locInicial = LatLng(-21.22332575411119, -43.77215283547053)
         val zoomLevel = 13f
 
         val inputsLayout = findViewById<ConstraintLayout>(R.id.main)
@@ -208,26 +209,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 markerList.clear()
 
-                runOnUiThread(this@MainActivity, textoBusca, locInicial)
+                locAtualUsuario?.let {
+                    runOnUiThread(this@MainActivity, textoBusca, it)
+                } ?: run {
+                    Toast.makeText(this@MainActivity, "Localização atual não disponível.", Toast.LENGTH_SHORT).show()
+                }
+
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
             } else {
-                Toast.makeText(
-                    this@MainActivity,
-                    "Digite algum sintoma para realizar a busca.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@MainActivity, "Digite algum sintoma para realizar a busca.", Toast.LENGTH_SHORT).show()
             }
         }
+
 
 
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback {
             googleMap = it
-
-            locInicial
-            zoomLevel
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locInicial, zoomLevel))
         })
 
         val faqButton = findViewById<FloatingActionButton>(R.id.sidebarButton)
@@ -520,25 +519,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return
         }
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                val locInicial = LatLng(location.latitude, location.longitude)
-                val markerIcon =
-                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
-                googleMap.addMarker(
-                    MarkerOptions().position(locInicial).title("Sua Localização").icon(markerIcon)
-                )
-                val zoomLevel = 14f
-                zoomLevel
-                googleMap.animateCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                        locInicial, zoomLevel
-                    )
-                )
-            } else {
+            location?.let {
+//                locAtualUsuario = LatLng(it.latitude, it.longitude)
+                locAtualUsuario = LatLng(-21.215897190938623, -43.78410891036684)
+                googleMap.addMarker(MarkerOptions().position(locAtualUsuario!!).title("Sua Localização"))
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locAtualUsuario!!, 14f))
+            } ?: run {
                 exibirMensagemErro("Não foi possível obter a sua localização. Ative a localização do dispositivo e tente novamente.")
-
             }
-        }.addOnFailureListener { e ->
+        }.addOnFailureListener {
             exibirMensagemErro("Falha na obtenção da localização. Verifique as configurações de localização do dispositivo.")
         }
     }
