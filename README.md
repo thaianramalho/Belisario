@@ -4,7 +4,7 @@
 Belisario é um aplicativo Android desenvolvido como parte de um projeto de iniciação científica na UNIPAC. Ele permite aos usuários inserir sintomas e encontrar os locais que atendem esses sintomas em Barbacena, MG. O aplicativo visa fornecer uma maneira conveniente para os residentes locais encontrarem serviços de saúde adequados com base nos sintomas apresentados.
 
 ## Funcionalidades
-- **Inserção de Sintomas**: Os usuários podem inserir os sintomas que estão experimentando.
+- **Inserção de Sintomas**: Os usuários podem inserir os sintomas que têm no momento, como febre, dor de cabeça, dor atrás dos olhos, etc.
 - **Localização de Serviços de Saúde**: Com base nos sintomas inseridos, o aplicativo exibe os locais de atendimento de saúde em Barbacena, MG, que tratam esses sintomas.
 - **Facilidade de Uso**: Interface intuitiva e fácil de usar para uma experiência do usuário agradável.
 
