@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://thaianramalho.com/api_belizario/sintomas.php?senha=dxic5CyB").build()
+            .url("https://devence.com.br/api_belisario/sintomas.php?senha=dxic5CyB").build()
 
         limparInputBusca.setOnClickListener {
             limparInput(inputBusca)
@@ -595,7 +595,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun runOnUiThread(context: Context, textoBusca: String, userLocation: LatLng) {
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://thaianramalho.com/api_belizario/atendimento.php?senha=dxic5CyB&sintoma=${textoBusca}")
+            .url("https://devence.com.br/api_belisario/atendimento.php?senha=dxic5CyB&sintoma=${textoBusca}")
             .build()
 
         client.newCall(request).enqueue(object : Callback {
